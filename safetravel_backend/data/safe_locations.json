@@ -1,0 +1,31 @@
+[
+  {"name": "Crawford Market Police Station", "latitude": 18.9489, "longitude": 72.8353, "type": "police", "availability": "24x7", "phone": "+91-22-22620262"},
+  {"name": "Azad Maidan Police Station", "latitude": 18.9350, "longitude": 72.8280, "type": "police", "availability": "24x7", "phone": "+91-22-22621855"},
+  {"name": "Colaba Police Station", "latitude": 18.9070, "longitude": 72.8170, "type": "police", "availability": "24x7", "phone": "+91-22-22150042"},
+  {"name": "D.N. Nagar Police Station", "latitude": 19.1210, "longitude": 72.8360, "type": "police", "availability": "24x7", "phone": "+91-22-26361234"},
+  {"name": "Bandra Police Station", "latitude": 19.0530, "longitude": 72.8430, "type": "police", "availability": "24x7", "phone": "+91-22-26401234"},
+
+  {"name": "St. George's Hospital", "latitude": 18.9340, "longitude": 72.8356, "type": "hospital", "availability": "24x7", "phone": "+91-22-22620343"},
+  {"name": "Nair Hospital (BYL Nair)", "latitude": 18.9616, "longitude": 72.8196, "type": "hospital", "availability": "24x7", "phone": "+91-22-23027600"},
+  {"name": "KEM Hospital", "latitude": 18.9960, "longitude": 72.8400, "type": "hospital", "availability": "24x7", "phone": "+91-22-24107000"},
+  {"name": "Lilavati Hospital", "latitude": 19.0493, "longitude": 72.8269, "type": "hospital", "availability": "24x7", "phone": "+91-22-26751000"},
+  {"name": "Hinduja Hospital (P.D. Hinduja)", "latitude": 19.0432, "longitude": 72.8383, "type": "hospital", "availability": "24x7", "phone": "+91-22-24447000"},
+
+  {"name": "Hotel Taj Mahal Palace", "latitude": 18.9218, "longitude": 72.8332, "type": "hotel", "availability": "24x7", "phone": "+91-22-66651234"},
+  {"name": "The Oberoi Mumbai", "latitude": 18.9240, "longitude": 72.8340, "type": "hotel", "availability": "24x7", "phone": "+91-22-66325757"},
+  {"name": "Hotel Marine Plaza", "latitude": 18.9370, "longitude": 72.8230, "type": "hotel", "availability": "24x7", "phone": "+91-22-22851212"},
+  {"name": "Trident Hotel Nariman Point", "latitude": 18.9270, "longitude": 72.8230, "type": "hotel", "availability": "24x7", "phone": "+91-22-66321234"},
+  {"name": "ITC Grand Central Mumbai", "latitude": 18.9975, "longitude": 72.8344, "type": "hotel", "availability": "24x7", "phone": "+91-22-24101234"},
+
+  {"name": "Chhatrapati Shivaji Maharaj Terminus (CSMT)", "latitude": 18.9398, "longitude": 72.8354, "type": "railway", "availability": "24x7", "phone": "+91-22-22621111"},
+  {"name": "Mumbai Central Station", "latitude": 18.9696, "longitude": 72.8194, "type": "railway", "availability": "24x7", "phone": "+91-22-23091234"},
+  {"name": "Bandra Terminus", "latitude": 19.0549, "longitude": 72.8399, "type": "railway", "availability": "24x7", "phone": "+91-22-26401234"},
+
+  {"name": "Mumbai Tourism Information Centre (Gateway of India)", "latitude": 18.9220, "longitude": 72.8347, "type": "tourist_centre", "availability": "9am-6pm", "phone": "+91-22-22026868"},
+  {"name": "Maharashtra Tourism Office (Nariman Point)", "latitude": 18.9270, "longitude": 72.8240, "type": "tourist_centre", "availability": "9am-5pm", "phone": "+91-22-22026713"},
+
+  {"name": "Dadar Police Station", "latitude": 19.0176, "longitude": 72.8446, "type": "police", "availability": "24x7", "phone": "+91-22-24221234"},
+  {"name": "Matunga General Hospital", "latitude": 19.0282, "longitude": 72.8390, "type": "hospital", "availability": "24x7", "phone": "+91-22-24051234"},
+  {"name": "Hotel Residency Fort", "latitude": 18.9334, "longitude": 72.8348, "type": "hotel", "availability": "24x7", "phone": "+91-22-22625525"},
+  {"name": "Kurla Station", "latitude": 19.0728, "longitude": 72.8826, "type": "railway", "availability": "24x7", "phone": "+91-22-25001234"}
+]
