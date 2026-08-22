@@ -1,0 +1,27 @@
+name: tourist_safety_p4
+description: "Flutter implementation of Task P4: Communication Resilience + Blockchain"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  connectivity_plus: ^6.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  dio: ^5.4.0
+  encrypt: ^5.0.3
+  web3dart: ^2.7.3
+  crypto: ^3.0.3
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true

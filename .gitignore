@@ -1,0 +1,10 @@
+.venv/
+.idea/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+mobile/.dart_tool/
+mobile/.idea/
+mobile/.packages
+mobile/build/
