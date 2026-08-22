@@ -37,9 +37,17 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
         child: Column(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'),
+              backgroundColor: AppColors.primary.withOpacity(0.2),
+              child: Text(
+                appState.userName.isNotEmpty ? appState.userName[0].toUpperCase() : 'E',
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 48,
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
