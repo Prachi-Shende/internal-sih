@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../theme/app_colors.dart';
 import '../components/buttons.dart';
+import '../services/app_state.dart';
 
 class TripScreen extends StatelessWidget {
   const TripScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return Scaffold(
       backgroundColor: AppColors.cardSageBackground,
       appBar: AppBar(
@@ -30,9 +34,9 @@ class TripScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User greeting
-            const Text(
-              'HEY JOHNNY !!',
-              style: TextStyle(
+            Text(
+              'HEY ${appState.userName.toUpperCase()} !!',
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
                 color: AppColors.primary,

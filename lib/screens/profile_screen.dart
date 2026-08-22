@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:provider/provider.dart';
+import '../services/app_state.dart';
 import '../theme/app_colors.dart';
 import 'profile/personal_info_screen.dart';
 import 'profile/emergency_contacts_screen.dart';
@@ -15,6 +18,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -37,18 +42,21 @@ class ProfileScreen extends StatelessWidget {
               backgroundImage: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Alex Traveler',
-              style: TextStyle(
+            Text(
+              appState.userName,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'alex.traveler@example.com',
-              style: TextStyle(color: AppColors.textSecondary),
+            Text(
+              appState.userEmail.isNotEmpty ? appState.userEmail : 'Explorer Account',
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 32),
             
@@ -67,6 +75,23 @@ class ProfileScreen extends StatelessWidget {
             _buildSectionHeader('OFFLINE'),
             _buildListTile(context, Icons.map, 'Offline Maps', const OfflineMapsScreen()),
             _buildListTile(context, Icons.storage, 'Offline Safety Data', const OfflineDataScreen()),
+            
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                },
+                icon: const Icon(Icons.logout, color: AppColors.emergency),
+                label: const Text('Sign Out', style: TextStyle(color: AppColors.emergency, fontWeight: FontWeight.bold)),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.emergency),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+              ),
+            ),
           ],
         ),
       ),

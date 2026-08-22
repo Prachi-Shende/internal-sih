@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../components/buttons.dart';
-import 'main_navigation.dart';
+import '../components/buttons.dart';
+import '../main.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -100,7 +101,7 @@ class OnboardingScreen extends StatelessWidget {
                     text: 'Get Started',
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const MainNavigationWrapper()),
+                        MaterialPageRoute(builder: (_) => const AuthWrapper()),
                       );
                     },
                   ),

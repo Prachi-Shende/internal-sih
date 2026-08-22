@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../services/app_state.dart';
 import '../../theme/app_colors.dart';
 
 class PersonalInfoScreen extends StatelessWidget {
@@ -6,6 +8,8 @@ class PersonalInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -39,9 +43,9 @@ class PersonalInfoScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            _buildTextField('Full Name', 'Alex Traveler'),
+            _buildTextField('Full Name', appState.userName),
             const SizedBox(height: 16),
-            _buildTextField('Email Address', 'alex.traveler@example.com'),
+            _buildTextField('Email Address', appState.userEmail.isNotEmpty ? appState.userEmail : 'No email provided'),
             const SizedBox(height: 16),
             _buildTextField('Phone Number', '+1 (555) 123-4567'),
             const SizedBox(height: 16),
