@@ -25,6 +25,7 @@ class StepSensor {
   int? _initialCounter;
 
   int? _lastCounter;
+  int? get lastCounter => _lastCounter;
 
   int counterSteps = 0;
 

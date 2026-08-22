@@ -10,6 +10,10 @@ class SensorCoordinator {
   final ImuSensor imuSensor;
   final StepSensor stepSensor;
   final GpsSensor gpsSensor;
+  double _filteredMagnitude = 0.0;
+  double _previousMagnitude = 0.0;
+
+  bool _isWalking = false;
 
   Timer? _gpsTimer;
 
@@ -45,9 +49,21 @@ class SensorCoordinator {
       final accel = imuSensor.latestAccelerometer;
 
       if (accel != null) {
-        _accelerationMagnitude = sqrt(
+        final magnitude = sqrt(
           accel.x * accel.x + accel.y * accel.y + accel.z * accel.z,
         );
+
+        _accelerationMagnitude = magnitude;
+
+        _filteredMagnitude = 0.15 * magnitude + 0.85 * _filteredMagnitude;
+
+        final delta = (_filteredMagnitude - _previousMagnitude).abs();
+
+        _previousMagnitude = _filteredMagnitude;
+
+        _isWalking = delta > 0.8;
+
+        _movementStatus = _isWalking ? 'walking' : 'stationary';
       }
 
       _emitSnapshot();

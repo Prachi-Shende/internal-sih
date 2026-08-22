@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'core/resilience/resilience_engine.dart';
 import 'core/resilience/sensors/imu_sensor.dart';
 import 'core/resilience/sensors/step_sensor.dart';
-import 'core/resilience/positioning/pdr_engine.dart';
+import 'core/resilience/positioning/pdr_engine.dart' as legacy_pdr;
 import 'core/resilience/positioning/heading_sensor.dart';
 import 'core/resilience/positioning/motion_direction_estimator.dart';
+
+import 'pdr/core/pdr_engine.dart' as classical_pdr;
+import 'screens/pdr_dashboard_screen.dart';
 
 void main() {
   runApp(const SIHApp());
@@ -20,12 +23,71 @@ class SIHApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'SIH Resilience Test',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+      title: 'Pedestrian Dead Reckoning (PDR)',
+      theme: ThemeData.dark(useMaterial3: true).copyWith(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          brightness: Brightness.dark,
+        ),
       ),
-      home: const ResilienceTestPage(),
+      home: const MainNavigationShell(),
+    );
+  }
+}
+
+class MainNavigationShell extends StatefulWidget {
+  const MainNavigationShell({super.key});
+
+  @override
+  State<MainNavigationShell> createState() => _MainNavigationShellState();
+}
+
+class _MainNavigationShellState extends State<MainNavigationShell> {
+  int _currentIndex = 0;
+  late final classical_pdr.PdrEngine _pdrEngine;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdrEngine = classical_pdr.PdrEngine();
+  }
+
+  @override
+  void dispose() {
+    _pdrEngine.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screens = [
+      PdrDashboardScreen(pdrEngine: _pdrEngine),
+      const ResilienceTestPage(),
+    ];
+
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: screens,
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
+          setState(() => _currentIndex = index);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.explore_outlined),
+            selectedIcon: Icon(Icons.explore, color: Colors.tealAccent),
+            label: 'PDR Engine',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shield_outlined),
+            selectedIcon: Icon(Icons.shield, color: Colors.blueAccent),
+            label: 'Resilience Test',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -91,7 +153,7 @@ class _ResilienceTestPageState extends State<ResilienceTestPage> {
   final ResilienceEngine engine = ResilienceEngine();
   final ImuSensor imuSensor = ImuSensor();
   final StepSensor stepSensor = StepSensor();
-  final PdrEngine pdrEngine = PdrEngine();
+  final legacy_pdr.PdrEngine pdrEngine = legacy_pdr.PdrEngine();
   final HeadingSensor headingSensor = HeadingSensor();
   final MotionDirectionEstimator motionDirectionEstimator =
       MotionDirectionEstimator();
@@ -161,6 +223,13 @@ class _ResilienceTestPageState extends State<ResilienceTestPage> {
       if (accel != null) {
         magnitude = sqrt(
           accel.x * accel.x + accel.y * accel.y + accel.z * accel.z,
+        );
+      }
+      if ((DateTime.now().millisecond % 500) < 20) {
+        debugPrint(
+          'ACCEL MAG=${magnitude.toStringAsFixed(2)} '
+          'walking=$isWalking '
+          'heading=${headingDegrees.toStringAsFixed(1)}',
         );
       }
 
@@ -240,6 +309,15 @@ ${headingDegrees.toStringAsFixed(1)}°
         final added = pdrEngine.update(
           stepCount: steps,
           headingDegrees: headingDegrees,
+        );
+
+        debugPrint(
+          'PDR DEBUG => '
+          'steps=${pdrEngine.totalSteps} '
+          'points=${pdrEngine.path.points.length} '
+          'x=${pdrEngine.x.toStringAsFixed(2)} '
+          'y=${pdrEngine.y.toStringAsFixed(2)} '
+          'conf=${(pdrEngine.confidence * 100).toStringAsFixed(0)}%',
         );
 
         debugPrint(
@@ -412,20 +490,6 @@ ${state.internetAvailable ? "ONLINE" : "OFFLINE"}
     super.dispose();
   }
 
-  // ============================================================
-  // UI
-  // ============================================================
-  Widget _buildPdrCanvas() {
-    return Card(
-      child: SizedBox(
-        height: 350,
-        child: CustomPaint(
-          painter: PdrPathPainter(points: pdrEngine.path.points),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -520,6 +584,15 @@ ${pdrX.toStringAsFixed(2)} m
 
 North-South:
 ${pdrY.toStringAsFixed(2)} m
+
+Step Length:
+${pdrEngine.strideLength.toStringAsFixed(2)} m
+
+PDR Confidence:
+${(pdrEngine.confidence * 100).toStringAsFixed(0)}%
+
+PDR Confidence:
+${(pdrEngine.confidence * 100).toStringAsFixed(1)} %
 
 Path Points:
 ${pdrEngine.path.points.length}
