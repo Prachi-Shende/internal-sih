@@ -8,6 +8,7 @@ import '../models/safety_event.dart';
 import '../storage/file_safety_event_store.dart';
 import '../storage/safety_event_store.dart';
 import '../transport/dev_mock_safety_event_transport.dart';
+import '../transport/real_http_safety_event_transport.dart';
 import '../transport/safety_event_transport.dart';
 import 'communication_orchestrator.dart';
 import 'sync_manager.dart';
@@ -22,6 +23,10 @@ class SafetyEngine {
 
   static int _idCounter = 1000;
 
+  /// Default transport factory used when no explicit transport is injected.
+  /// Set to [DevMockSafetyEventTransport] in test suites or [RealHttpSafetyEventTransport] in production.
+  static SafetyEventTransport Function() defaultTransportProvider = () => RealHttpSafetyEventTransport();
+
   final StreamController<SafetyEvent> _eventController =
       StreamController<SafetyEvent>.broadcast();
   Stream<SafetyEvent> get eventStream => _eventController.stream;
@@ -34,7 +39,7 @@ class SafetyEngine {
     SyncManager? syncManager,
   }) {
     final effectiveStore = store ?? FileSafetyEventStore();
-    final effectiveTransport = transport ?? DevMockSafetyEventTransport();
+    final effectiveTransport = transport ?? defaultTransportProvider();
     final effectiveOrchestrator = orchestrator ??
         CommunicationOrchestrator(
           connectivityService: resilienceEngine.connectivityService,

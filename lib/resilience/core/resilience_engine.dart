@@ -13,6 +13,7 @@ import '../models/resilience_state.dart';
 import '../models/wifi_fingerprint.dart';
 import '../providers/gps_positioning_provider.dart';
 import '../providers/pdr_positioning_provider.dart';
+import '../providers/wifi_positioning_provider.dart';
 import '../repositories/localization_anchor_repository.dart';
 import '../sensors/connectivity_service.dart';
 import '../sensors/wifi_scanner.dart';
@@ -34,6 +35,7 @@ enum ResilienceOverrideMode {
 class ResilienceEngine {
   final GpsPositioningProvider gpsProvider;
   final PdrPositioningProvider pdrProvider;
+  final WifiPositioningProvider wifiProvider;
   final ConnectivityService connectivityService;
   final WifiScanner wifiScanner;
   final LocalizationAnchorRepository anchorRepository;
@@ -76,6 +78,7 @@ class ResilienceEngine {
   ResilienceEngine({
     GpsPositioningProvider? gpsProvider,
     PdrPositioningProvider? pdrProvider,
+    WifiPositioningProvider? wifiProvider,
     ConnectivityService? connectivityService,
     WifiScanner? wifiScanner,
     LocalizationAnchorRepository? anchorRepository,
@@ -85,9 +88,15 @@ class ResilienceEngine {
   })  : gpsProvider = gpsProvider ?? GpsPositioningProvider(),
         pdrProvider = pdrProvider ?? PdrPositioningProvider(),
         connectivityService = connectivityService ?? ConnectivityService(),
-        wifiScanner = wifiScanner ?? SimulatedWifiScanner(),
-        anchorRepository = anchorRepository ?? InMemoryLocalizationAnchorRepository(),
-        fingerprintMatcher = fingerprintMatcher ?? const WifiFingerprintMatcher(),
+        wifiScanner = wifiScanner ?? wifiProvider?.scanner ?? SimulatedWifiScanner(),
+        anchorRepository = anchorRepository ?? wifiProvider?.repository ?? InMemoryLocalizationAnchorRepository(),
+        fingerprintMatcher = fingerprintMatcher ?? wifiProvider?.matcher ?? const WifiFingerprintMatcher(),
+        wifiProvider = wifiProvider ??
+            WifiPositioningProvider(
+              scanner: wifiScanner ?? SimulatedWifiScanner(),
+              repository: anchorRepository ?? InMemoryLocalizationAnchorRepository(),
+              matcher: fingerprintMatcher ?? const WifiFingerprintMatcher(),
+            ),
         mapConstraintProvider = mapConstraintProvider ?? PassThroughMapConstraintProvider(),
         config = config ?? ResilienceConfig.standard;
 
@@ -527,8 +536,8 @@ class ResilienceEngine {
         final previousUncertainty = _currentState.position?.uncertaintyMeters ?? 40.0;
 
         final anchorPos = PositionEstimate(
-          latitude: anchor.latitude,
-          longitude: anchor.longitude,
+          latitude: matchResult.estimatedLatitude ?? anchor.latitude,
+          longitude: matchResult.estimatedLongitude ?? anchor.longitude,
           source: PositionSource.wifiFingerprint,
           confidence: matchResult.confidence,
           uncertaintyMeters: matchResult.uncertaintyMeters,
@@ -541,22 +550,30 @@ class ResilienceEngine {
         final constraint = await mapConstraintProvider.constrain(anchorPos);
         final effectiveAnchorPos = constraint.constrainedPosition;
 
-        // Re-anchor PDR to the accepted landmark without wiping history
-        pdrProvider.setAnchor(effectiveAnchorPos);
+        final isGpsActive = _currentState.positioningMode == PositioningMode.gps &&
+            _currentState.capabilities.gpsAvailable;
 
-        _recordSourceTransition(effectiveAnchorPos.source, customDescription: 'PDR → WIFI ANCHOR (${anchor.name})');
+        if (!isGpsActive) {
+          // Re-anchor PDR to the accepted landmark without wiping history
+          pdrProvider.setAnchor(effectiveAnchorPos);
+          _recordSourceTransition(effectiveAnchorPos.source, customDescription: 'PDR → WIFI ANCHOR (${anchor.name})');
+        }
 
         _currentState = _currentState.copyWith(
-          position: effectiveAnchorPos,
-          isMapConstrained: constraint.wasSnapped,
-          lastMapConstraintStatus: constraint.wasSnapped ? 'MATCHED (WALKABLE CORRIDOR)' : 'NOT APPLIED',
-          lastMapConstraintDistanceMeters: constraint.distanceCorrectionMeters,
-          pdrAnchor: effectiveAnchorPos,
-          pdrDisplacementMeters: 0.0,
+          position: isGpsActive ? _currentState.position : effectiveAnchorPos,
+          isMapConstrained: isGpsActive ? _currentState.isMapConstrained : constraint.wasSnapped,
+          lastMapConstraintStatus: isGpsActive
+              ? _currentState.lastMapConstraintStatus
+              : (constraint.wasSnapped ? 'MATCHED (WALKABLE CORRIDOR)' : 'NOT APPLIED'),
+          lastMapConstraintDistanceMeters: isGpsActive
+              ? _currentState.lastMapConstraintDistanceMeters
+              : constraint.distanceCorrectionMeters,
+          pdrAnchor: isGpsActive ? _currentState.pdrAnchor : effectiveAnchorPos,
+          pdrDisplacementMeters: isGpsActive ? _currentState.pdrDisplacementMeters : 0.0,
           lastDiscrepancyMeters: discrepancyMeters,
           lastMatchedAnchor: anchor,
           lastWifiAnchorStatus: 'MATCHED',
-          lastWifiCorrectionStatus: 'APPLIED',
+          lastWifiCorrectionStatus: isGpsActive ? 'OBSERVED_GPS_ACTIVE' : 'APPLIED',
           lastWifiSimilarityScore: matchResult.similarityScore,
           previousUncertaintyMeters: previousUncertainty,
           anchorCorrectionCount: _currentState.anchorCorrectionCount + 1,

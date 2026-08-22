@@ -13,6 +13,7 @@ import '../resilience/sensors/wifi_scanner.dart';
 import '../safety/core/safety_engine.dart';
 import '../safety/core/sync_manager.dart';
 import '../safety/models/safety_event.dart';
+import '../safety/transport/real_http_safety_event_transport.dart';
 import 'wifi_fingerprint_lab_screen.dart';
 
 /// High-observability testing console for real Android phone resilience validation.
@@ -816,6 +817,57 @@ class _ResilienceDashboardScreenState extends State<ResilienceDashboardScreen> {
                   'LAST SYNC',
                   _formatTimeAgo(_safetyEngine.syncManager.lastSyncTimestamp),
                 ),
+                Builder(builder: (context) {
+                  final transport = _safetyEngine.orchestrator.internetChannel.transport;
+                  final isHttp = transport is RealHttpSafetyEventTransport;
+                  final transportName = isHttp ? 'REAL HTTP' : 'DEV MOCK';
+                  final targetUrl = isHttp ? transport.baseUrl : 'In-Memory Mock';
+
+                  return Column(
+                    children: [
+                      _buildDetailRow(
+                        'TRANSPORT',
+                        transportName,
+                        valueColor: isHttp ? const Color(0xFF58A6FF) : const Color(0xFFE3B341),
+                      ),
+                      InkWell(
+                        onTap: isHttp ? () => _showBackendConfigDialog(transport) : null,
+                        borderRadius: BorderRadius.circular(4),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text('SERVER URL', style: TextStyle(color: Colors.white54, fontSize: 10.5)),
+                                  if (isHttp) ...[
+                                    const SizedBox(width: 4),
+                                    const Icon(Icons.edit, size: 10, color: Color(0xFF58A6FF)),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  targetUrl,
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(
+                                    color: isHttp ? const Color(0xFF58A6FF) : Colors.white60,
+                                    fontSize: 10.5,
+                                    fontFamily: 'monospace',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
 
                 const SizedBox(height: 12),
 
@@ -1058,6 +1110,76 @@ class _ResilienceDashboardScreenState extends State<ResilienceDashboardScreen> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showBackendConfigDialog(RealHttpSafetyEventTransport transport) {
+    final controller = TextEditingController(text: transport.baseUrl);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF161B22),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Row(
+          children: [
+            Icon(Icons.dns, color: Color(0xFF58A6FF), size: 20),
+            SizedBox(width: 8),
+            Text('Configure Backend URL', style: TextStyle(color: Colors.white, fontSize: 16)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Enter the development machine LAN IP or server URL reachable by this phone:',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              style: const TextStyle(color: Colors.white, fontSize: 13, fontFamily: 'monospace'),
+              decoration: InputDecoration(
+                hintText: 'http://192.168.1.X:8080',
+                hintStyle: const TextStyle(color: Colors.white30, fontSize: 13),
+                filled: true,
+                fillColor: const Color(0xFF0D1117),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Colors.white24),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0xFF58A6FF)),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1F6FEB),
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              final newUrl = controller.text.trim();
+              if (newUrl.isNotEmpty) {
+                setState(() {
+                  transport.baseUrl = newUrl;
+                });
+              }
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Save'),
+          ),
+        ],
       ),
     );
   }
