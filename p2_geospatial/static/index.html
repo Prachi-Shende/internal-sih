@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resilient Tourist Safety — Geospatial Intelligence & Geo-Fencing</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-p2 {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            flex: 1;
+            height: 100%;
+            width: 100%;
+            background: #090d16;
+            z-index: 1;
+        }
+
+        /* Sidebar Control Panel */
+        .sidebar {
+            width: 380px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-outside {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .status-approaching {
+            background: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+            border: 1px solid rgba(234, 179, 8, 0.4);
+            animation: pulse-yellow 2s infinite;
+        }
+
+        .status-inside {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-yellow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(234, 179, 8, 0); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .data-label { color: #94a3b8; }
+        .data-value { font-weight: 600; color: #f8fafc; }
+
+        .source-pill {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-unsafe {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-unsafe:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: rgba(51, 65, 85, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(71, 85, 105, 0.9);
+        }
+
+        .place-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .place-name { font-size: 0.85rem; font-weight: 600; }
+        .place-type { font-size: 0.75rem; color: #94a3b8; text-transform: capitalize; }
+
+        /* Custom Leaflet Map styling */
+        .leaflet-popup-content-wrapper {
+            background: rgba(15, 23, 42, 0.95);
+            color: #f8fafc;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .leaflet-popup-tip { background: rgba(15, 23, 42, 0.95); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-group">
+            <span class="badge-p2">Module P2</span>
+            <h1>Resilient Tourist Safety Engine</h1>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <span style="font-size: 0.8rem; color: #94a3b8;">Location Source:</span>
+            <span id="sourcePill" class="source-pill">GPS</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div id="map"></div>
+
+        <div class="sidebar">
+            
+            <!-- Live Geofence Alert Card -->
+            <div class="card">
+                <div class="card-title">
+                    <span>Geofence Safety Status</span>
+                    <span id="statusPill" class="status-pill status-outside">OUTSIDE</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Hotspot Zone:</span>
+                    <span class="data-value" id="hotspotIdVal">None</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Hotspot Risk Level:</span>
+                    <span class="data-value" id="riskLevelVal">LOW</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Distance to Hazard:</span>
+                    <span class="data-value" id="distanceVal">N/A</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Reported Incidents:</span>
+                    <span class="data-value" id="incidentsVal">0</span>
+                </div>
+            </div>
+
+            <!-- Demo Simulation Controls -->
+            <div class="card">
+                <div class="card-title">Interactive Demo Controls</div>
+                <button id="btnToggleResilience" class="btn btn-secondary">
+                    📡 Toggle Mode: Switch to PDR (GPS Fail)
+                </button>
+                <button id="btnWalkHotspot" class="btn">
+                    🚶 Simulate Walking into High Risk Hotspot
+                </button>
+                <button id="btnResetPos" class="btn btn-secondary">
+                    🔄 Reset User Location
+                </button>
+            </div>
+
+            <!-- Urgent SOS Feature -->
+            <button id="btnUnsafe" class="btn btn-unsafe">
+                🚨 I FEEL UNSAFE
+            </button>
+
+            <!-- Nearby Safe Havens -->
+            <div class="card">
+                <div class="card-title">Nearby Safe Havens (P2 Google Places)</div>
+                <div id="safePlacesList" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="font-size: 0.8rem; color: #94a3b8;">Loading safe locations...</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Default Mumbai starting position
+        let userPos = { lat: 19.002, lon: 72.862 };
+        let locationSource = "GPS";
+        let userMarker;
+        let map;
+        let hotspotsData = [];
+        let hotspotCircles = [];
+        let targetHotspotPos = null;
+
+        // Initialize Map
+        function initMap() {
+            map = L.map('map').setView([userPos.lat, userPos.lon], 14);
+
+            // Dark Mode Tile Layer
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            // User Icon
+            const userIcon = L.divIcon({
+                className: 'user-marker',
+                html: '<div style="background: #3b82f6; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px #3b82f6;"></div>',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            userMarker = L.marker([userPos.lat, userPos.lon], { icon: userIcon }).addTo(map)
+                .bindPopup("<b>Tourist Location</b><br>Source: <span id='popupSource'>" + locationSource + "</span>");
+
+            // Fetch Hotspots & Safe Places on load
+            fetchHotspots();
+            fetchSafePlaces(userPos.lat, userPos.lon);
+            checkGeofence();
+        }
+
+        // Fetch Crime Hotspots from P2 Backend API
+        async function fetchHotspots() {
+            try {
+                const res = await fetch('/hotspots');
+                const data = await res.json();
+                hotspotsData = Array.isArray(data) ? data : (data.hotspots || []);
+
+                renderHotspots(hotspotsData);
+
+                // Find a HIGH risk hotspot to use for demo simulation
+                const high = hotspotsData.find(h => h.risk === 'HIGH');
+                if (high) {
+                    targetHotspotPos = { lat: high.center_lat, lon: high.center_lon };
+                }
+            } catch (err) {
+                console.error("Error fetching hotspots:", err);
+            }
+        }
+
+        // Render circles for each hotspot on Leaflet Map
+        function renderHotspots(hotspots) {
+            hotspots.forEach(h => {
+                let color = "#3b82f6";
+                let fillColor = "rgba(59, 130, 246, 0.2)";
+
+                if (h.risk === "HIGH") {
+                    color = "#ef4444";
+                    fillColor = "rgba(239, 68, 68, 0.35)";
+                } else if (h.risk === "MEDIUM") {
+                    color = "#eab308";
+                    fillColor = "rgba(234, 179, 8, 0.25)";
+                }
+
+                const circle = L.circle([h.center_lat, h.center_lon], {
+                    color: color,
+                    fillColor: fillColor,
+                    fillOpacity: 0.4,
+                    radius: h.radius || 150,
+                    weight: h.risk === "HIGH" ? 2 : 1
+                }).addTo(map);
+
+                circle.bindPopup(`
+                    <div style="font-size:0.9rem;">
+                        <b style="color:${color};">Hotspot ${h.id} (${h.risk} RISK)</b><br>
+                        Score: <b>${h.score}</b><br>
+                        Reported Incidents: <b>${h.reported_incidents}</b>
+                    </div>
+                `);
+
+                hotspotCircles.push(circle);
+            });
+        }
+
+        // Fetch Safe Havens (Police/Hospital/Hotels)
+        async function fetchSafePlaces(lat, lon) {
+            try {
+                const res = await fetch(`/safe-locations?lat=${lat}&lon=${lon}`);
+                const data = await res.json();
+                const places = Array.isArray(data) ? data : (data.safe_locations || []);
+
+                const listEl = document.getElementById('safePlacesList');
+                listEl.innerHTML = '';
+
+                places.forEach(p => {
+                    // Render marker on map
+                    const color = p.type === 'police' ? '#a855f7' : (p.type === 'hospital' ? '#ef4444' : '#10b981');
+                    L.circleMarker([p.lat, p.lon], {
+                        radius: 7,
+                        fillColor: color,
+                        color: "#ffffff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    }).addTo(map).bindPopup(`<b>${p.name}</b><br>Type: ${p.type}`);
+
+                    // Render list item
+                    const item = document.createElement('div');
+                    item.className = 'place-item';
+                    item.style.borderLeftColor = color;
+                    item.innerHTML = `
+                        <div>
+                            <div class="place-name">${p.name}</div>
+                            <div class="place-type">${p.type}</div>
+                        </div>
+                        <span style="font-size:0.75rem; color:#4ade80;">Active</span>
+                    `;
+                    listEl.appendChild(item);
+                });
+            } catch (err) {
+                console.error("Error fetching safe places:", err);
+            }
+        }
+
+        // Check Geofence status with backend
+        async function checkGeofence() {
+            try {
+                const res = await fetch('/check-geofence', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        lat: userPos.lat,
+                        lon: userPos.lon,
+                        source: locationSource
+                    })
+                });
+
+                const data = await res.json();
+                updateUI(data);
+            } catch (err) {
+                console.error("Error checking geofence:", err);
+            }
+        }
+
+        // Update UI status cards
+        function updateUI(data) {
+            const statusPill = document.getElementById('statusPill');
+            const state = data.geofence_state || "OUTSIDE";
+
+            statusPill.innerText = state;
+            statusPill.className = 'status-pill ' + 
+                (state === 'INSIDE' ? 'status-inside' : (state === 'APPROACHING' ? 'status-approaching' : 'status-outside'));
+
+            document.getElementById('hotspotIdVal').innerText = data.hotspot_id || 'None';
+            document.getElementById('riskLevelVal').innerText = data.risk || 'LOW';
+            document.getElementById('distanceVal').innerText = data.distance_m ? `${data.distance_m} m` : 'N/A';
+            document.getElementById('incidentsVal').innerText = data.reported_incidents || 0;
+            document.getElementById('sourcePill').innerText = locationSource;
+        }
+
+        // Move User Marker
+        function updateUserPosition(lat, lon) {
+            userPos = { lat, lon };
+            userMarker.setLatLng([lat, lon]);
+            map.panTo([lat, lon]);
+            checkGeofence();
+            
+            // Dynamically fetch new safe places for the new location!
+            document.getElementById('safePlacesList').innerHTML = '<div style="font-size: 0.8rem; color: #94a3b8;">Scanning new area for safe havens...</div>';
+            fetchSafePlaces(lat, lon);
+        }
+
+        // Event Listeners for Simulation
+        document.getElementById('btnToggleResilience').addEventListener('click', () => {
+            locationSource = locationSource === "GPS" ? "PDR (GPS Failure)" : "GPS";
+            document.getElementById('sourcePill').innerText = locationSource;
+            checkGeofence();
+        });
+
+        document.getElementById('btnWalkHotspot').addEventListener('click', () => {
+            if (!targetHotspotPos) return;
+            // Walk user directly to target high risk hotspot center
+            updateUserPosition(targetHotspotPos.lat, targetHotspotPos.lon);
+        });
+
+        document.getElementById('btnResetPos').addEventListener('click', () => {
+            updateUserPosition(19.002, 72.862);
+        });
+
+        document.getElementById('btnUnsafe').addEventListener('click', () => {
+            alert("🚨 'I FEEL UNSAFE' TRIGGERED!\n\nSystem Action:\n1. Risk escalated to CRITICAL.\n2. Nearest safe haven selected (Police Station).\n3. Incident logged for fallback sync.");
+        });
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
