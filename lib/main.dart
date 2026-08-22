@@ -2,15 +2,24 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'core/resilience/resilience_engine.dart';
+import 'core/resilience/resilience_engine.dart' as legacy_resilience;
 import 'core/resilience/sensors/imu_sensor.dart';
 import 'core/resilience/sensors/step_sensor.dart';
 import 'core/resilience/positioning/pdr_engine.dart' as legacy_pdr;
 import 'core/resilience/positioning/heading_sensor.dart';
 import 'core/resilience/positioning/motion_direction_estimator.dart';
 
+import 'package:flutter/foundation.dart';
+
 import 'pdr/core/pdr_engine.dart' as classical_pdr;
+import 'resilience/core/resilience_engine.dart';
+import 'resilience/map/graph_map_matcher.dart';
+import 'resilience/map/walkable_graph.dart';
+import 'resilience/providers/pdr_positioning_provider.dart';
+import 'resilience/sensors/android_wifi_scanner.dart';
+import 'resilience/sensors/wifi_scanner.dart';
 import 'screens/pdr_dashboard_screen.dart';
+import 'screens/resilience_dashboard_screen.dart';
 
 void main() {
   runApp(const SIHApp());
@@ -45,15 +54,29 @@ class MainNavigationShell extends StatefulWidget {
 class _MainNavigationShellState extends State<MainNavigationShell> {
   int _currentIndex = 0;
   late final classical_pdr.PdrEngine _pdrEngine;
+  late final ResilienceEngine _resilienceEngine;
 
   @override
   void initState() {
     super.initState();
     _pdrEngine = classical_pdr.PdrEngine();
+    final pdrProvider = PdrPositioningProvider(engine: _pdrEngine);
+
+    final wifiScanner = defaultTargetPlatform == TargetPlatform.android
+        ? AndroidWifiScanner()
+        : SimulatedWifiScanner();
+    final mapMatcher = GraphMapMatcher(graph: WalkableGraph.demoVenue());
+
+    _resilienceEngine = ResilienceEngine(
+      pdrProvider: pdrProvider,
+      wifiScanner: wifiScanner,
+      mapConstraintProvider: mapMatcher,
+    );
   }
 
   @override
   void dispose() {
+    _resilienceEngine.dispose();
     _pdrEngine.dispose();
     super.dispose();
   }
@@ -61,6 +84,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     final screens = [
+      ResilienceDashboardScreen(resilienceEngine: _resilienceEngine),
       PdrDashboardScreen(pdrEngine: _pdrEngine),
       const ResilienceTestPage(),
     ];
@@ -77,14 +101,19 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         },
         destinations: const [
           NavigationDestination(
+            icon: Icon(Icons.shield_outlined),
+            selectedIcon: Icon(Icons.shield, color: Colors.blueAccent),
+            label: 'Resilience Engine',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.explore_outlined),
             selectedIcon: Icon(Icons.explore, color: Colors.tealAccent),
             label: 'PDR Engine',
           ),
           NavigationDestination(
-            icon: Icon(Icons.shield_outlined),
-            selectedIcon: Icon(Icons.shield, color: Colors.blueAccent),
-            label: 'Resilience Test',
+            icon: Icon(Icons.sensors_outlined),
+            selectedIcon: Icon(Icons.sensors, color: Colors.amberAccent),
+            label: 'Sensor Lab',
           ),
         ],
       ),
@@ -150,7 +179,8 @@ class _ResilienceTestPageState extends State<ResilienceTestPage> {
   // SERVICES
   // ============================================================
 
-  final ResilienceEngine engine = ResilienceEngine();
+  final legacy_resilience.ResilienceEngine engine =
+      legacy_resilience.ResilienceEngine();
   final ImuSensor imuSensor = ImuSensor();
   final StepSensor stepSensor = StepSensor();
   final legacy_pdr.PdrEngine pdrEngine = legacy_pdr.PdrEngine();
@@ -212,6 +242,8 @@ class _ResilienceTestPageState extends State<ResilienceTestPage> {
   // START IMU
   // ============================================================
 
+  DateTime _lastImuUiUpdate = DateTime.now();
+
   void _startImuSensor() {
     imuSensor.onSensorUpdate = () {
       if (!mounted) return;
@@ -223,13 +255,6 @@ class _ResilienceTestPageState extends State<ResilienceTestPage> {
       if (accel != null) {
         magnitude = sqrt(
           accel.x * accel.x + accel.y * accel.y + accel.z * accel.z,
-        );
-      }
-      if ((DateTime.now().millisecond % 500) < 20) {
-        debugPrint(
-          'ACCEL MAG=${magnitude.toStringAsFixed(2)} '
-          'walking=$isWalking '
-          'heading=${headingDegrees.toStringAsFixed(1)}',
         );
       }
 
@@ -255,6 +280,11 @@ class _ResilienceTestPageState extends State<ResilienceTestPage> {
           headingDegrees: heading,
         );
       }
+
+      // Throttle UI setState to 10 FPS (100ms) to eliminate main-thread starvation
+      final now = DateTime.now();
+      if (now.difference(_lastImuUiUpdate).inMilliseconds < 100) return;
+      _lastImuUiUpdate = now;
 
       setState(() {
         accelerationMagnitude = magnitude;
@@ -306,26 +336,9 @@ ${headingDegrees.toStringAsFixed(1)}°
       onStepUpdate: (steps) {
         if (!mounted) return;
 
-        final added = pdrEngine.update(
+        pdrEngine.update(
           stepCount: steps,
           headingDegrees: headingDegrees,
-        );
-
-        debugPrint(
-          'PDR DEBUG => '
-          'steps=${pdrEngine.totalSteps} '
-          'points=${pdrEngine.path.points.length} '
-          'x=${pdrEngine.x.toStringAsFixed(2)} '
-          'y=${pdrEngine.y.toStringAsFixed(2)} '
-          'conf=${(pdrEngine.confidence * 100).toStringAsFixed(0)}%',
-        );
-
-        debugPrint(
-          'PDR UPDATE: sensor=$steps added=$added '
-          'total=${pdrEngine.totalSteps} '
-          'x=${pdrEngine.x.toStringAsFixed(2)} '
-          'y=${pdrEngine.y.toStringAsFixed(2)} '
-          'points=${pdrEngine.path.points.length}',
         );
 
         setState(() {

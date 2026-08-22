@@ -61,10 +61,7 @@ class StepSensor {
 
     _subscription = _channel.receiveBroadcastStream().listen(
       (dynamic event) {
-        debugPrint('RAW EVENT = $event');
-
         if (event is! Map) {
-          debugPrint('STEP SENSOR: Ignoring non-map event');
           return;
         }
 
@@ -80,8 +77,6 @@ class StepSensor {
           status = sensorStatus;
           isAvailable = sensorStatus == 'AVAILABLE';
 
-          debugPrint('STEP SENSOR STATUS -> $sensorStatus');
-
           onStatusUpdate(sensorStatus);
 
           return;
@@ -95,13 +90,10 @@ class StepSensor {
           final rawValue = event['steps'];
 
           if (rawValue is! num) {
-            debugPrint('STEP COUNTER: invalid value=$rawValue');
             return;
           }
 
           final rawSteps = rawValue.toInt();
-
-          debugPrint('STEP COUNTER EVENT -> rawSteps=$rawSteps');
 
           // ----------------------------------------------------
           // FIRST COUNTER READING
@@ -112,8 +104,6 @@ class StepSensor {
             _lastCounter = rawSteps;
 
             counterSteps = 0;
-
-            debugPrint('STEP COUNTER BASELINE -> $rawSteps');
 
             // IMPORTANT:
             //
@@ -135,8 +125,6 @@ class StepSensor {
           // ----------------------------------------------------
 
           if (calculatedSteps < 0) {
-            debugPrint('STEP COUNTER RESET DETECTED');
-
             _initialCounter = rawSteps;
             _lastCounter = rawSteps;
 
@@ -148,8 +136,6 @@ class StepSensor {
           _lastCounter = rawSteps;
 
           counterSteps = calculatedSteps;
-
-          debugPrint('STEP COUNTER SESSION VALUE -> $counterSteps');
 
           // ----------------------------------------------------
           // IMPORTANT
@@ -169,10 +155,6 @@ class StepSensor {
         // ======================================================
 
         if (type == 'detector') {
-          final rawDetectorSteps = event['steps'];
-
-          debugPrint('STEP DETECTOR EVENT -> steps=$rawDetectorSteps');
-
           // ----------------------------------------------------
           // EVERY DETECTOR EVENT REPRESENTS ONE NEW STEP
           // ----------------------------------------------------
@@ -180,8 +162,6 @@ class StepSensor {
           detectorSteps++;
 
           sessionSteps = detectorSteps;
-
-          debugPrint('STEP SESSION TOTAL -> $sessionSteps');
 
           // ----------------------------------------------------
           // THIS IS NOW THE AUTHORITATIVE LIVE CALLBACK
@@ -191,12 +171,6 @@ class StepSensor {
 
           return;
         }
-
-        // ======================================================
-        // UNKNOWN EVENT
-        // ======================================================
-
-        debugPrint('STEP SENSOR: Unknown event type=$type');
       },
 
       onError: (dynamic error) {

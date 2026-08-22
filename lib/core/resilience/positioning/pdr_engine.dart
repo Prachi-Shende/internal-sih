@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flutter/foundation.dart';
 
 import 'pdr_path.dart';
 
@@ -153,14 +152,6 @@ class PdrEngine {
     _confidence = (_confidence * 0.90) + (stepConfidence * 0.10);
 
     _confidence = _confidence.clamp(0.0, 1.0);
-
-    debugPrint(
-      'PDR STEP -> '
-      'steps=$_totalSteps '
-      'x=${_x.toStringAsFixed(2)} '
-      'y=${_y.toStringAsFixed(2)} '
-      'conf=${(_confidence * 100).toStringAsFixed(0)}%',
-    );
   }
 
   // ============================================================
