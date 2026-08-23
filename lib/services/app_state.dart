@@ -20,6 +20,7 @@ class AppState extends ChangeNotifier {
   String _userEmail = '';
 
   AppState() {
+    _recomputeRisk();
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
         _fetchUserData(user.uid);
