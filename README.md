@@ -1,48 +1,67 @@
-# TRAVARA: Offline-First Tourist Safety App 🛡️🧭
-
-TRAVARA is an advanced, offline-capable tourist safety and navigation application. Designed to protect tourists in unfamiliar environments, it ensures graceful degradation of services—meaning that even when you lose internet connection, cellular service, or GPS, the app continues to protect you and coordinate help.
-
-## Core Architecture 🏗️
-
-The system is broken down into 5 heavily resilient modules:
-
-### P1: Core Services & Live State
-- **Live Authentication Sync**: Seamlessly integrates with Firebase Authentication. Your unique `uid` serves as your session identifier, ensuring your Incident History and GPS track follows you across any device.
-- **Dynamic Risk Theming**: The app's UI is globally tied to a live risk state. If an emergency is active, the app automatically transitions into an **Emergency Theme**—tinting the `Scaffold` red, pulsating the navigation bar, and locking a high-priority warning banner to the top of your screen.
-
-### P2: Mapping, Geo-fencing, & Navigation
-- **Offline Maps**: Powered by `flutter_map`, rendering lightweight OpenStreetMap tiles. 
-- **Real-time Geo-fencing Alarms**: The map continuously monitors your real GPS coordinates against the radius of known crime hotspots. If you walk into a dangerous area, an immediate on-screen alarm is triggered.
-- **In-App Routing**: Uses OSRM (Open Source Routing Machine) to generate real-time pedestrian walking routes directly on the map.
-- **Deep-linking Fallback**: One-tap deep links out to the native Google Maps app for driving directions and mass-transit routes to safe locations (Hospitals, Police stations).
-
-### P3: Risk Assessment Engine
-- Calculates live "Danger Scores" for locations. When tapping on a crime hotspot, tourists can instantly see a detailed breakdown of Total Reported Incidents, Recent Incidents, and a composite Danger Score out of 100.
-
-### P4: Offline Sync, Reliability & Immutable Evidence (Blockchain)
-- **Pedestrian Dead Reckoning (PDR)**: If GPS satellites are obstructed (e.g., in a tunnel or dense city), the app uses the device's accelerometer, gyroscope, and compass to estimate movement locally.
-- **Local Offline Queue**: If you trigger an `EMERGENCY SOS` without internet, the request is not dropped. It is encrypted and queued locally, automatically blasting off to the servers the microsecond a network connection is detected.
-- **Blockchain Verification**: Corrupt entities cannot erase evidence of an emergency. When an incident is logged, a cryptographic hash is taken and recorded on a smart-contract blockchain. Your profile's "Incident History" will permanently display this exact `blockchain_hash`, creating an undeniable chain of custody for your emergency.
-
-### P5: Communication & Fallbacks
-- Designed to fallback to SMS-based relay networks when standard 4G/5G data is entirely unavailable, ensuring your encrypted GPS coordinates always reach responders.
+<div align="center">
+  <h1>🛡️ Travara (SafeTravel)</h1>
+  <p><b>An Offline-First Tourist Safety & Navigation Ecosystem</b></p>
+</div>
 
 ---
 
-## Getting Started (Development)
+## 📖 Overview
+Travara is an advanced, offline-capable tourist safety application designed to protect travelers in unfamiliar environments. It ensures graceful degradation of services—meaning that even when you lose internet connection, cellular service, or GPS, the app continues to protect you and coordinate help.
 
-### Prerequisites
-- Flutter SDK (latest stable)
-- Firebase CLI (for auth setup)
-- Python 3.10+ (for the FastAPI backend)
+## ✨ Key Features
+* **Real-time Geo-fencing & Alarms:** Continuously monitors your live GPS coordinates against the radius of known crime hotspots, triggering instant on-screen warnings if you enter a dangerous area.
+* **Offline Maps & Routing:** Powered by OpenStreetMap and OSRM, generating real-time pedestrian walking routes directly on the map without needing constant internet.
+* **Pedestrian Dead Reckoning (PDR):** If GPS satellites are obstructed (e.g. in a tunnel or dense city), the app uses the device's accelerometer, gyroscope, and compass to estimate your movement locally.
+* **Local Offline Data Queue:** If you trigger an `EMERGENCY SOS` without internet, the request is encrypted and queued locally, automatically transmitting to responders the microsecond a network connection or SMS relay is detected.
+* **Dynamic Risk Theming:** The app's entire UI shifts colors (tinting red and pulsing) based on the live threat assessment of your immediate area.
+* **Immutable Evidence Logging (Blockchain):** To prevent corruption or tampering, every emergency incident logged is cryptographically hashed and recorded on a smart-contract blockchain, creating an undeniable chain of custody.
 
-### Running the App
-1. Ensure the Python backend is running locally on `http://localhost:8000`.
-2. Connect a physical Android/iOS device or an emulator.
-3. Run the following:
+## 🏗️ Architecture & Workflow
+The system utilizes a heavily resilient client-server architecture:
+1. **Live State Sync:** The Flutter client maintains a live socket/polling connection with the backend, continually updating your safety state based on Firebase Authentication.
+2. **Risk Assessment Engine:** The Python backend continuously ingests crime data, clustering it into Hotspots and calculating dynamic "Danger Scores" out of 100 for any given coordinate.
+3. **Emergency Trigger Workflow:** 
+   - User triggers SOS → App attempts API call.
+   - If offline → App queues locally and attempts SMS relay.
+   - Backend receives SOS → Logs to Postgres → Writes hash to Blockchain → Updates Global UI Theme for the user's session.
+
+## 🛠️ Tech Stack
+**Frontend (Mobile)**
+* Flutter & Dart (Cross-platform iOS/Android)
+* `flutter_map` (OSM rendering) & `geolocator`
+* Firebase Authentication
+
+**Backend (Server & Processing)**
+* FastAPI (Python 3.10+)
+* PostgreSQL & SQLite
+* SQLAlchemy ORM
+* OSRM (Open Source Routing Machine) APIs
+* Web3 / Blockchain Smart Contracts (for Incident Hashing)
+
+## 🚀 How to Run the App
+
+### 1. Start the Backend
+```bash
+cd Ayaansh/safetravel_backend
+pip install -r requirements.txt
+# Run on 0.0.0.0 so physical devices on Wi-Fi can connect
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 2. Configure the Frontend
+Update `lib/config.dart` to point to your computer's local Wi-Fi IP address (e.g. `http://192.168.x.x:8000`) instead of localhost, so physical devices can communicate with the backend wirelessly.
+
+### 3. Run the Flutter App
 ```bash
 flutter pub get
+# A full run is required (no hot restart) due to heavy native plugins
 flutter run
 ```
 
-> **Note**: Because this app utilizes heavy native plugins (`geolocator`, `url_launcher`), a full `flutter run` is required instead of Hot Restart if you are pulling the code for the first time or updating dependencies.
+## 🔮 Future Scope
+* **Wearable Integration:** Triggering SOS directly from smartwatches without pulling out the phone.
+* **Predictive AI Risk Modeling:** Using historical data to predict which streets will become dangerous at specific times of night.
+* **Mesh Networking:** Allowing tourists' phones to communicate via Bluetooth/Wi-Fi Direct to form an offline emergency relay network in remote locations.
+
+## 👥 Team
+Built for **Smart India Hackathon (SIH)**.
