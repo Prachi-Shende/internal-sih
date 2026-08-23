@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
+import '../../services/app_state.dart';
 
-class NotificationsScreen extends StatefulWidget {
+class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
 
   @override
-  State<NotificationsScreen> createState() => _NotificationsScreenState();
-}
-
-class _NotificationsScreenState extends State<NotificationsScreen> {
-  bool _riskAlerts = true;
-  bool _systemStatus = true;
-  bool _travelTips = false;
-
-  @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -26,9 +21,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(24.0),
         children: [
-          _buildSwitchTile('Risk Alerts', 'Push notifications when approaching high-risk areas', _riskAlerts, (val) => setState(() => _riskAlerts = val)),
-          _buildSwitchTile('System Status', 'Alerts about internet connectivity and GPS precision', _systemStatus, (val) => setState(() => _systemStatus = val)),
-          _buildSwitchTile('Travel Tips', 'Occasional safety and cultural tips for your current region', _travelTips, (val) => setState(() => _travelTips = val)),
+          _buildSwitchTile(
+            'Risk Alerts', 
+            'Push notifications when approaching high-risk areas', 
+            appState.notifyRiskAlerts, 
+            (val) => appState.updateNotificationPreferences(riskAlerts: val),
+          ),
+          _buildSwitchTile(
+            'System Status', 
+            'Alerts about internet connectivity and GPS precision', 
+            appState.notifySystemStatus, 
+            (val) => appState.updateNotificationPreferences(systemStatus: val),
+          ),
+          _buildSwitchTile(
+            'Travel Tips', 
+            'Occasional safety and cultural tips for your current region', 
+            appState.notifyTravelTips, 
+            (val) => appState.updateNotificationPreferences(travelTips: val),
+          ),
         ],
       ),
     );
@@ -48,3 +58,4 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 }
+

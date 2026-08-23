@@ -89,6 +89,7 @@ class TripDestination {
   final String imageUrl;
   final double rating;
   final bool isPopular;
+  final String category;
 
   TripDestination({
     required this.id,
@@ -96,6 +97,7 @@ class TripDestination {
     required this.location,
     required this.imageUrl,
     required this.rating,
+    required this.category,
     this.isPopular = false,
   });
 }
@@ -113,5 +115,21 @@ class TimelineEvent {
     required this.description,
     required this.state,
     required this.icon,
+  });
+}
+
+class Trip {
+  final String id;
+  final String title;
+  final String dateString;
+  final String imageUrl;
+  final bool isUpcoming;
+
+  Trip({
+    required this.id,
+    required this.title,
+    required this.dateString,
+    required this.imageUrl,
+    required this.isUpcoming,
   });
 }

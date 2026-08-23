@@ -3,6 +3,8 @@ import '../theme/app_colors.dart';
 import '../services/models.dart';
 
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 class DestinationCard extends StatelessWidget {
   final TripDestination destination;
   final VoidCallback onTap;
@@ -22,6 +24,7 @@ class DestinationCard extends StatelessWidget {
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
+          color: Colors.grey[300], // Fallback background
           image: DecorationImage(
             image: NetworkImage(destination.imageUrl),
             fit: BoxFit.cover,

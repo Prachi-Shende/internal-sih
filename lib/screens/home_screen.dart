@@ -1,10 +1,15 @@
+import 'dart:convert';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../theme/app_colors.dart';
 import '../services/app_state.dart';
 import '../services/mock_data.dart';
+import '../services/models.dart';
 import '../components/cards.dart';
+import 'profile/notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,6 +20,63 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'Mountains';
+  String _searchQuery = '';
+  List<TripDestination> _searchResults = [];
+  bool _isLoading = false;
+  Timer? _debounce;
+
+  Future<void> _searchLocations(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _isLoading = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final url = Uri.parse('https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(query)}&format=json&addressdetails=1&limit=5');
+      final response = await http.get(url, headers: {'User-Agent': 'TravaraApp/1.0'});
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        final List<TripDestination> results = data.map((item) {
+          final address = item['address'] ?? {};
+          final name = item['name'] ?? 'Unknown Location';
+          final country = address['country'] ?? '';
+          final city = address['city'] ?? address['town'] ?? address['village'] ?? '';
+          final locationStr = [city, country].where((e) => e.toString().isNotEmpty).join(', ');
+          
+          return TripDestination(
+            id: item['place_id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+            name: name.toString().isEmpty ? 'Location' : name,
+            location: locationStr.isEmpty ? 'Unknown' : locationStr,
+            imageUrl: 'https://images.unsplash.com/photo-1488085061387-422e29b40080',
+            rating: 4.5,
+            isPopular: false,
+            category: 'Search',
+          );
+        }).toList();
+
+        if (mounted) {
+          setState(() {
+            _searchResults = results;
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,22 +140,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: appState.isEmergencyActive ? AppColors.emergency.withOpacity(0.2) : Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                        )
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.notifications, 
-                      size: 20, 
-                      color: appState.isEmergencyActive ? AppColors.emergency : AppColors.textPrimary
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: appState.isEmergencyActive ? AppColors.emergency.withOpacity(0.2) : Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                          )
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.notifications, 
+                        size: 20, 
+                        color: appState.isEmergencyActive ? AppColors.emergency : AppColors.textPrimary
+                      ),
                     ),
                   ),
                 ],
@@ -151,10 +221,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                    if (_debounce?.isActive ?? false) _debounce!.cancel();
+                    _debounce = Timer(const Duration(milliseconds: 500), () {
+                      _searchLocations(value);
+                    });
+                  },
                   onSubmitted: (value) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Searching for: $value')),
-                    );
                     FocusScope.of(context).unfocus();
                   },
                   decoration: InputDecoration(
@@ -166,6 +242,58 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+
+              // Search Dropdown
+              if (_searchQuery.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 250),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: _isLoading 
+                    ? const Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : _searchResults.isEmpty
+                        ? const Padding(
+                            padding: EdgeInsets.all(24.0),
+                            child: Center(child: Text("No destinations found")),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.zero,
+                            itemCount: _searchResults.length,
+                            itemBuilder: (context, index) {
+                              final dest = _searchResults[index];
+                              return ListTile(
+                                leading: const Icon(Icons.location_on, color: AppColors.primary),
+                                title: Text(dest.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                subtitle: Text(dest.location, style: const TextStyle(fontSize: 12)),
+                                onTap: () {
+                                  // Action on selecting a destination
+                                  FocusScope.of(context).unfocus();
+                                  setState(() {
+                                    _searchQuery = '';
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Selected: ${dest.name}')),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                ),
+              ],
 
               const SizedBox(height: 24),
 
@@ -223,10 +351,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   clipBehavior: Clip.none,
-                  itemCount: MockData.popularDestinations.length,
+                  itemCount: MockData.popularDestinations.where((d) => d.category == _selectedCategory).length,
                   itemBuilder: (context, index) {
+                    final categoryDestinations = MockData.popularDestinations.where((d) => d.category == _selectedCategory).toList();
                     return DestinationCard(
-                      destination: MockData.popularDestinations[index],
+                      destination: categoryDestinations[index],
                       onTap: () {
                         // Navigation to detail could go here
                       },

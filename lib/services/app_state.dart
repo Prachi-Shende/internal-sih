@@ -18,10 +18,21 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   
   String _userName = 'Explorer';
   String _userEmail = '';
+  String _userPhone = '';
+  String _userBloodType = '';
+  String _userMedicalConditions = '';
+  
+  // Notification Preferences
+  bool _notifyRiskAlerts = true;
+  bool _notifySystemStatus = true;
+  bool _notifyTravelTips = false;
   
   Timer? _pollingTimer;
   StreamSubscription<Position>? _locationSubscription;
   final bool _isLocalOfflineQueueActive = false; // Source of truth for local offline queue
+
+  List<Trip> _upcomingTrips = List.from(MockData.mockUpcomingTrips);
+  List<Trip> _pastTrips = List.from(MockData.mockPastTrips);
 
   AppState() {
     WidgetsBinding.instance.addObserver(this);
@@ -39,6 +50,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       } else {
         _userName = 'Explorer';
         _userEmail = '';
+        _userPhone = '';
+        _userBloodType = '';
+        _userMedicalConditions = '';
       }
       
       // Reset state and fetch live data for the new user/session
@@ -195,6 +209,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         final data = doc.data()!;
         _userName = data['fullName'] ?? 'Explorer';
         _userEmail = data['email'] ?? '';
+        _userPhone = data['phone'] ?? '';
+        _userBloodType = data['bloodType'] ?? '';
+        _userMedicalConditions = data['medicalConditions'] ?? '';
         notifyListeners();
       }
     } catch (e) {
@@ -209,6 +226,85 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   bool get isEmergencyActive => _isEmergencyActive;
   String get userName => _userName;
   String get userEmail => _userEmail;
+  String get userPhone => _userPhone;
+  String get userBloodType => _userBloodType;
+  String get userMedicalConditions => _userMedicalConditions;
+  
+  bool get notifyRiskAlerts => _notifyRiskAlerts;
+  bool get notifySystemStatus => _notifySystemStatus;
+  bool get notifyTravelTips => _notifyTravelTips;
+  
+  List<Trip> get upcomingTrips => _upcomingTrips;
+  List<Trip> get pastTrips => _pastTrips;
+
+  void addTrip(Trip trip) {
+    if (trip.isUpcoming) {
+      _upcomingTrips.add(trip);
+    } else {
+      _pastTrips.add(trip);
+    }
+    notifyListeners();
+  }
+
+  void deleteTrip(String tripId) {
+    _upcomingTrips.removeWhere((t) => t.id == tripId);
+    _pastTrips.removeWhere((t) => t.id == tripId);
+    notifyListeners();
+  }
+
+  void updateTrip(Trip updatedTrip) {
+    final upIndex = _upcomingTrips.indexWhere((t) => t.id == updatedTrip.id);
+    if (upIndex != -1) {
+      _upcomingTrips[upIndex] = updatedTrip;
+    } else {
+      final pastIndex = _pastTrips.indexWhere((t) => t.id == updatedTrip.id);
+      if (pastIndex != -1) {
+        _pastTrips[pastIndex] = updatedTrip;
+      }
+    }
+    notifyListeners();
+  }
+
+  void updateNotificationPreferences({
+    bool? riskAlerts,
+    bool? systemStatus,
+    bool? travelTips,
+  }) {
+    if (riskAlerts != null) _notifyRiskAlerts = riskAlerts;
+    if (systemStatus != null) _notifySystemStatus = systemStatus;
+    if (travelTips != null) _notifyTravelTips = travelTips;
+    notifyListeners();
+  }
+
+  Future<void> updateUserData({
+    required String name,
+    required String email,
+    required String phone,
+    required String bloodType,
+    required String medicalConditions,
+  }) async {
+    _userName = name;
+    _userEmail = email;
+    _userPhone = phone;
+    _userBloodType = bloodType;
+    _userMedicalConditions = medicalConditions;
+    notifyListeners();
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'fullName': name,
+          'email': email,
+          'phone': phone,
+          'bloodType': bloodType,
+          'medicalConditions': medicalConditions,
+        }, SetOptions(merge: true));
+      } catch (e) {
+        debugPrint('Error updating user data: $e');
+      }
+    }
+  }
 
   void activateSafetyAssist() {
     _isEmergencyActive = true;
