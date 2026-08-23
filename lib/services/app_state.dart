@@ -3,12 +3,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models.dart';
 import 'mock_data.dart';
+import 'risk_engine.dart';
 
 class AppState extends ChangeNotifier {
   SystemState _systemState = SystemState.normal;
   LocationEstimate _currentLocation = MockData.initialLocation;
   CommunicationStatus _communicationStatus = MockData.normalComm;
-  RiskLevel _currentRisk = RiskLevel.low;
+  RiskAssessment _riskAssessment = const RiskAssessment(
+    risk: RiskLevel.low,
+    score: 0,
+    reasons: ['No significant risk factors detected'],
+  );
   bool _isEmergencyActive = false;
   
   String _userName = 'Explorer';
@@ -43,20 +48,37 @@ class AppState extends ChangeNotifier {
   SystemState get systemState => _systemState;
   LocationEstimate get currentLocation => _currentLocation;
   CommunicationStatus get communicationStatus => _communicationStatus;
-  RiskLevel get currentRisk => _currentRisk;
+  RiskAssessment get riskAssessment => _riskAssessment;
+  RiskLevel get currentRisk => _riskAssessment.risk; // kept for existing UI code
   bool get isEmergencyActive => _isEmergencyActive;
   String get userName => _userName;
   String get userEmail => _userEmail;
 
+  /// Recomputes risk using the P3 RiskEngine.
+  ///
+  /// TODO(P2): replace MockData.mockHotspot with a live lookup of the
+  /// hotspot (if any) containing _currentLocation.
+  /// TODO(P1): pass a real routeDeviationMeters once PDR/route tracking
+  /// exists; isolation is fixed to false until an isolation signal exists.
+  void _recomputeRisk({bool userReportedUnsafe = false}) {
+    _riskAssessment = RiskEngine.assess(
+      nearbyHotspot: MockData.mockHotspot,
+      currentTime: DateTime.now(),
+      isIsolated: false,
+      routeDeviationMeters: null,
+      userReportedUnsafe: userReportedUnsafe,
+    );
+  }
+
   void activateSafetyAssist() {
     _isEmergencyActive = true;
-    _currentRisk = RiskLevel.high;
+    _recomputeRisk(userReportedUnsafe: true);
     notifyListeners();
   }
   
   void resolveIncident() {
     _isEmergencyActive = false;
-    _currentRisk = RiskLevel.low;
+    _recomputeRisk(userReportedUnsafe: false);
     _systemState = SystemState.normal;
     notifyListeners();
   }
@@ -83,7 +105,11 @@ class AppState extends ChangeNotifier {
     _systemState = SystemState.normal;
     _currentLocation = MockData.initialLocation;
     _communicationStatus = MockData.normalComm;
-    _currentRisk = RiskLevel.low;
+    _riskAssessment = const RiskAssessment(
+      risk: RiskLevel.low,
+      score: 0,
+      reasons: ['No significant risk factors detected'],
+    );
     _isEmergencyActive = false;
     notifyListeners();
   }

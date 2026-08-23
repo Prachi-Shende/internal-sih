@@ -70,11 +70,20 @@ class SafetyScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      appState.currentRisk == RiskLevel.low ? 'LOW' : 'ELEVATED',
+                      _riskLabel(appState.riskAssessment.risk),
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
                         color: appState.currentRisk == RiskLevel.low ? AppColors.primary : AppColors.warning,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Score: ${appState.riskAssessment.score}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -90,11 +99,13 @@ class SafetyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             
-            _buildReasonRow(Icons.location_on, 'Location Confidence', 'High', true),
-            _buildReasonRow(Icons.people, 'Reported Incidents', 'Very low in this area', true),
-            _buildReasonRow(Icons.wb_sunny, 'Time of Day', 'Daylight hours', true),
-            if (appState.currentRisk != RiskLevel.low)
-               _buildReasonRow(Icons.warning, 'Risk Factor', 'Proximity to hotspot', false),
+            ...appState.riskAssessment.reasons.map(
+              (reason) => _buildReasonRow(
+                _iconForReason(reason),
+                reason,
+                appState.currentRisk == RiskLevel.low,
+              ),
+            ),
 
             const SizedBox(height: 32),
 
@@ -172,7 +183,32 @@ class SafetyScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReasonRow(IconData icon, String title, String value, bool isPositive) {
+  String _riskLabel(RiskLevel risk) {
+    switch (risk) {
+      case RiskLevel.critical:
+        return 'CRITICAL';
+      case RiskLevel.high:
+        return 'HIGH';
+      case RiskLevel.medium:
+        return 'MEDIUM';
+      case RiskLevel.low:
+        return 'LOW';
+      case RiskLevel.unknown:
+        return 'UNKNOWN';
+    }
+  }
+
+  IconData _iconForReason(String reason) {
+    final lower = reason.toLowerCase();
+    if (lower.contains('incident')) return Icons.people;
+    if (lower.contains('night') || lower.contains('time')) return Icons.nightlight_round;
+    if (lower.contains('isolat')) return Icons.person_off;
+    if (lower.contains('route') || lower.contains('deviat')) return Icons.alt_route;
+    if (lower.contains('unsafe') || lower.contains('user')) return Icons.warning;
+    return Icons.check_circle;
+  }
+
+  Widget _buildReasonRow(IconData icon, String reason, bool isPositive) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -187,12 +223,9 @@ class SafetyScreen extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(value, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
-              ],
+            child: Text(
+              reason,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.textPrimary),
             ),
           ),
         ],

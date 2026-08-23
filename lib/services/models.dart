@@ -90,6 +90,26 @@ class TripDestination {
   });
 }
 
+/// Output of the P3 risk engine.
+/// Matches the team contract: { "risk": "HIGH", "score": 78, "reasons": [...] }
+class RiskAssessment {
+  final RiskLevel risk;
+  final int score; // 0-100
+  final List<String> reasons;
+
+  const RiskAssessment({
+    required this.risk,
+    required this.score,
+    required this.reasons,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'risk': risk.name,
+        'score': score,
+        'reasons': reasons,
+      };
+}
+
 class TimelineEvent {
   final DateTime time;
   final String title;
