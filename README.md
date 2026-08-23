@@ -64,10 +64,11 @@ flutter run
 * **Mesh Networking:** Allowing tourists' phones to communicate via Bluetooth/Wi-Fi Direct to form an offline emergency relay network in remote locations.
 
 ## 👥 Team
+Built for **Smart India Hackathon (SIH)**.
 - Diksha Thongire
 - Ayaansh Churi
 - Sourish Phate
 - Prachi Shende
 - Krish Shah
 - Shipra Singh
-Built for **Smart India Hackathon (SIH)**.
+
