@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://touristsafety.org/schemas/p1_system_snapshot.schema.json",
+  "title": "P1SystemSnapshot",
+  "description": "Clean application-level handover contract produced by the P1 Resilient Localization & Kinematics subsystem for P2 (Maps), P3 (Safety Risk), P4 (Communication/Blockchain), P5 (Backend), and P6 (UI).",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "position",
+    "movement",
+    "resilience",
+    "connectivity"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp of this snapshot snapshot."
+    },
+    "position": {
+      "type": "object",
+      "description": "Best-estimate geographic coordinates and accuracy metrics.",
+      "required": [
+        "isDegraded",
+        "isAbsolute",
+        "timestamp"
+      ],
+      "properties": {
+        "latitude": {
+          "type": ["number", "null"],
+          "minimum": -90.0,
+          "maximum": 90.0,
+          "description": "WGS-84 Latitude in decimal degrees. Null if no position estimate is available."
+        },
+        "longitude": {
+          "type": ["number", "null"],
+          "minimum": -180.0,
+          "maximum": 180.0,
+          "description": "WGS-84 Longitude in decimal degrees. Null if no position estimate is available."
+        },
+        "source": {
+          "type": ["string", "null"],
+          "enum": ["gps", "pdr", "wifiFingerprint", "fused", "wifiRtt", "mapMatched", "lastKnown", null],
+          "description": "Active positioning source selected by ResilienceEngine."
+        },
+        "confidence": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Positioning confidence estimate in range [0.0, 1.0]."
+        },
+        "uncertaintyMeters": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "description": "Horizontal circular error uncertainty in meters."
+        },
+        "isDegraded": {
+          "type": "boolean",
+          "description": "True if fix is dead-reckoned or degraded without fresh absolute anchoring."
+        },
+        "isAbsolute": {
+          "type": "boolean",
+          "description": "True if fix was derived directly from global satellite or verified Wi-Fi landmark."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "movement": {
+      "type": "object",
+      "description": "Pedestrian dead reckoning kinematics and step analytics.",
+      "required": [
+        "steps",
+        "distanceMeters",
+        "headingDegrees",
+        "direction",
+        "speedMps",
+        "strideLengthMeters",
+        "isStationary",
+        "isWalking",
+        "stepConfidence",
+        "headingConfidence",
+        "overallConfidence",
+        "localX",
+        "localY",
+        "timestamp"
+      ],
+      "properties": {
+        "steps": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total validated pedestrian steps accumulated."
+        },
+        "distanceMeters": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Total distance walked in meters."
+        },
+        "headingDegrees": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 360.0,
+          "description": "Smoothed walking heading angle in degrees clockwise from North."
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["NORTH", "NORTH_EAST", "EAST", "SOUTH_EAST", "SOUTH", "SOUTH_WEST", "WEST", "NORTH_WEST"],
+          "description": "Cardinal compass direction."
+        },
+        "speedMps": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Estimated walking speed in meters per second."
+        },
+        "strideLengthMeters": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Estimated stride length in meters."
+        },
+        "isStationary": {
+          "type": "boolean",
+          "description": "True if zero-velocity/stationary state is detected."
+        },
+        "isWalking": {
+          "type": "boolean",
+          "description": "True if active walking gait is detected."
+        },
+        "stepConfidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "headingConfidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "overallConfidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "localX": {
+          "type": "number",
+          "description": "Eastward displacement in local Cartesian meters."
+        },
+        "localY": {
+          "type": "number",
+          "description": "Northward displacement in local Cartesian meters."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "resilience": {
+      "type": "object",
+      "description": "Multi-tier resilience state machine and hardware capabilities.",
+      "required": [
+        "mode",
+        "infrastructureCase",
+        "systemStatusLabel",
+        "confidenceRating",
+        "gpsAvailable",
+        "gpsHealth",
+        "wifiAvailable",
+        "pdrActive",
+        "internetAvailable",
+        "pdrDisplacementMeters",
+        "anchorCorrectionCount",
+        "isMapConstrained",
+        "timestamp"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["gps", "pdrFallback", "recovering"],
+          "description": "Active operational positioning mode."
+        },
+        "infrastructureCase": {
+          "type": "string",
+          "enum": ["case1", "case2", "case3", "case4"],
+          "description": "Active four-tier infrastructure scenario."
+        },
+        "systemStatusLabel": {
+          "type": "string",
+          "description": "Human-readable status string."
+        },
+        "confidenceRating": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"]
+        },
+        "gpsAvailable": {
+          "type": "boolean"
+        },
+        "gpsHealth": {
+          "type": "string",
+          "enum": ["disabled", "searching", "active", "stale", "lost"]
+        },
+        "wifiAvailable": {
+          "type": "boolean"
+        },
+        "pdrActive": {
+          "type": "boolean"
+        },
+        "activePositionSource": {
+          "type": ["string", "null"]
+        },
+        "activeConfidence": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "activeUncertaintyMeters": {
+          "type": ["number", "null"],
+          "minimum": 0.0
+        },
+        "internetAvailable": {
+          "type": "boolean"
+        },
+        "pdrDisplacementMeters": {
+          "type": "number"
+        },
+        "lastAnchorDiscrepancyMeters": {
+          "type": ["number", "null"]
+        },
+        "lastMatchedAnchorId": {
+          "type": ["string", "null"]
+        },
+        "lastWifiAnchorStatus": {
+          "type": ["string", "null"]
+        },
+        "lastWifiSimilarityScore": {
+          "type": ["number", "null"]
+        },
+        "anchorCorrectionCount": {
+          "type": "integer"
+        },
+        "isMapConstrained": {
+          "type": "boolean"
+        },
+        "lastMapConstraintStatus": {
+          "type": ["string", "null"]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "connectivity": {
+      "type": "object",
+      "description": "Network connectivity and communication dispatch routing.",
+      "required": [
+        "isOnline",
+        "cellularAvailable",
+        "wifiAvailable",
+        "activeDeliveryChannel",
+        "timestamp"
+      ],
+      "properties": {
+        "isOnline": {
+          "type": "boolean"
+        },
+        "cellularAvailable": {
+          "type": "boolean"
+        },
+        "wifiAvailable": {
+          "type": "boolean"
+        },
+        "activeDeliveryChannel": {
+          "type": "string",
+          "enum": ["INTERNET", "OFFLINE_QUEUE"]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
