@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme/app_colors.dart';
 import '../services/app_state.dart';
 import '../services/mock_data.dart';
+import '../services/models.dart';
 import '../components/cards.dart';
 
 class HomeScreen extends StatefulWidget {

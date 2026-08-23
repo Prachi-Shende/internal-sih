@@ -1,8 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../theme/app_colors.dart';
 
-class LocationPermissionsScreen extends StatelessWidget {
+class LocationPermissionsScreen extends StatefulWidget {
   const LocationPermissionsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<LocationPermissionsScreen> createState() => _LocationPermissionsScreenState();
+}
+
+class _LocationPermissionsScreenState extends State<LocationPermissionsScreen> {
+  String _gpsStatus = 'Checking...';
+  Color _gpsColor = AppColors.textSecondary;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLivePermissions();
+  }
+
+  Future<void> _checkLivePermissions() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() {
+          _gpsStatus = 'Service Disabled';
+          _gpsColor = AppColors.emergency;
+        });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      setState(() {
+        if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+          _gpsStatus = 'Granted (Live)';
+          _gpsColor = AppColors.primary;
+        } else if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+          _gpsStatus = 'Denied (Live)';
+          _gpsColor = AppColors.emergency;
+        } else {
+          _gpsStatus = 'Unknown';
+          _gpsColor = AppColors.warning;
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _gpsStatus = 'Unavailable';
+        _gpsColor = AppColors.warning;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +68,19 @@ class LocationPermissionsScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _buildPermissionCard(
             title: 'Precise Location (GPS)',
-            status: 'Granted',
+            status: _gpsStatus,
             icon: Icons.gps_fixed,
-            color: AppColors.primary,
+            color: _gpsColor,
           ),
           _buildPermissionCard(
             title: 'Background Location',
-            status: 'Granted',
+            status: 'System Managed',
             icon: Icons.location_on,
             color: AppColors.primary,
           ),
           _buildPermissionCard(
             title: 'Bluetooth Scanning',
-            status: 'Denied',
+            status: 'Denied (Mock)',
             icon: Icons.bluetooth,
             color: AppColors.emergency,
           ),
@@ -51,7 +98,7 @@ class LocationPermissionsScreen extends StatelessWidget {
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Bluetooth scanning improves location accuracy in dense urban areas where GPS signals might be weak. Consider enabling it for maximum safety.',
+                    'Your GPS status is now dynamically fetched live from your device. Background and Bluetooth are currently mock fields for the prototype.',
                     style: TextStyle(color: AppColors.textSecondary, height: 1.5),
                   ),
                 ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_colors.dart';
 import '../components/buttons.dart';
+import '../components/cards.dart';
 import '../services/app_state.dart';
 import '../services/mock_data.dart';
 import '../services/models.dart';
@@ -67,36 +68,10 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
               ),
               const SizedBox(height: 24),
               
-              // Current state context
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.divider),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.warning.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.location_off, color: AppColors.warning, size: 20),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('Current Location', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                          Text('Medium confidence (PDR)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              // Current state context (StatusCard)
+              StatusCard(
+                state: context.watch<AppState>().systemState,
+                risk: context.watch<AppState>().currentRisk,
               ),
 
               const SizedBox(height: 32),
