@@ -12,6 +12,7 @@ import 'profile/notifications_screen.dart';
 import 'profile/location_permissions_screen.dart';
 import 'profile/offline_maps_screen.dart';
 import 'profile/offline_data_screen.dart';
+import 'profile/incident_history_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -79,6 +80,10 @@ class ProfileScreen extends StatelessWidget {
             _buildListTile(context, Icons.notifications, 'Notifications', const NotificationsScreen()),
             _buildListTile(context, Icons.location_on, 'Location Permissions', const LocationPermissionsScreen()),
             
+            const SizedBox(height: 24),
+            _buildSectionHeader('HISTORY'),
+            _buildListTile(context, Icons.history, 'Incident History', const IncidentHistoryScreen()),
+
             const SizedBox(height: 24),
             _buildSectionHeader('OFFLINE'),
             _buildListTile(context, Icons.map, 'Offline Maps', const OfflineMapsScreen()),

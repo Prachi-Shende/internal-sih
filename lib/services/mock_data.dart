@@ -1,7 +1,7 @@
 import 'models.dart';
 
 class MockData {
-  static final List<TripDestination> popularDestinations = [
+  static List<TripDestination> popularDestinations = [
     TripDestination(
       id: 'd1',
       name: 'Nusa Dua Beach',
@@ -36,14 +36,14 @@ class MockData {
     ),
   ];
 
-  static final LocationEstimate initialLocation = LocationEstimate(
+  static LocationEstimate initialLocation = LocationEstimate(
     lat: -8.7941,
     lon: 115.2266, // near Nusa Dua
     source: 'GPS',
     confidence: LocationConfidence.high,
   );
 
-  static final List<SafeLocation> safeLocations = [
+  static List<SafeLocation> safeLocations = [
     SafeLocation(
       id: 's1',
       name: 'Tourist Help Centre',
@@ -52,6 +52,8 @@ class MockData {
       isOpen: true,
       isStaffed: true,
       score: 95,
+      lat: -8.7950,
+      lon: 115.2260,
     ),
     SafeLocation(
       id: 's2',
@@ -61,6 +63,8 @@ class MockData {
       isOpen: true,
       isStaffed: true,
       score: 88,
+      lat: -8.7960,
+      lon: 115.2280,
     ),
     SafeLocation(
       id: 's3',
@@ -70,19 +74,26 @@ class MockData {
       isOpen: true,
       isStaffed: true,
       score: 92,
+      lat: -8.7920,
+      lon: 115.2250,
     ),
   ];
 
-  static final Hotspot mockHotspot = Hotspot(
+  static Hotspot mockHotspot = Hotspot(
     id: 'h1',
     name: 'Kuta Night Market Area',
     risk: RiskLevel.high,
     reportedIncidents: 12,
-    recentIncidents: 4,
-    radius: 300,
+    recentIncidents: 3,
+    score: 85.0,
+    radius: 1500, // 1.5 km
+    centerLat: -8.7970,
+    centerLon: 115.2250,
   );
 
-  static final CommunicationStatus normalComm = CommunicationStatus(
+  static List<Hotspot> hotspots = [mockHotspot];
+
+  static CommunicationStatus normalComm = CommunicationStatus(
     internet: true,
     sms: true,
     relay: true,
@@ -90,7 +101,7 @@ class MockData {
     selectedChannel: 'INTERNET',
   );
 
-  static final CommunicationStatus offlineComm = CommunicationStatus(
+  static CommunicationStatus offlineComm = CommunicationStatus(
     internet: false,
     sms: false,
     relay: true,
@@ -98,7 +109,7 @@ class MockData {
     selectedChannel: 'RELAY',
   );
 
-  static final List<TimelineEvent> mockTimeline = [
+  static List<TimelineEvent> mockTimeline = [
     TimelineEvent(
       time: DateTime.now().subtract(const Duration(minutes: 5)),
       title: 'GPS signal lost',

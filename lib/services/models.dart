@@ -24,7 +24,10 @@ class Hotspot {
   final RiskLevel risk;
   final int reportedIncidents;
   final int recentIncidents;
+  final double score;
   final double radius; // meters
+  final double centerLat;
+  final double centerLon;
 
   Hotspot({
     required this.id,
@@ -32,7 +35,10 @@ class Hotspot {
     required this.risk,
     required this.reportedIncidents,
     required this.recentIncidents,
+    required this.score,
     required this.radius,
+    required this.centerLat,
+    required this.centerLon,
   });
 }
 
@@ -44,6 +50,8 @@ class SafeLocation {
   final bool isOpen;
   final bool isStaffed;
   final int score;
+  final double lat;
+  final double lon;
 
   SafeLocation({
     required this.id,
@@ -53,6 +61,8 @@ class SafeLocation {
     required this.isOpen,
     required this.isStaffed,
     required this.score,
+    required this.lat,
+    required this.lon,
   });
 }
 

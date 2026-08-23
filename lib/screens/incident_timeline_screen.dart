@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_colors.dart';
 import '../services/app_state.dart';
+import '../services/models.dart';
 import '../services/mock_data.dart';
 
 class IncidentTimelineScreen extends StatelessWidget {
-  const IncidentTimelineScreen({Key? key}) : super(key: key);
+  final SafeLocation? safeLocation;
+  const IncidentTimelineScreen({Key? key, this.safeLocation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -128,21 +130,25 @@ class IncidentTimelineScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  context.read<AppState>().resolveIncident();
-                  // Pop back twice to get out of Safety Assist
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
-                },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.sage, width: 2),
+            if (safeLocation != null)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${safeLocation!.lat},${safeLocation!.lon}&travelmode=walking');
+                    try {
+                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                    } catch (e) {
+                      debugPrint('Could not launch map: $e');
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text('START NAVIGATION', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
-                child: const Text('RESOLVE INCIDENT', style: TextStyle(color: AppColors.sage)),
               ),
-            ),
           ],
         ),
       ),

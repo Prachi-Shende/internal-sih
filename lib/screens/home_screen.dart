@@ -21,7 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final appState = context.watch<AppState>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: appState.isEmergencyActive 
+          ? AppColors.emergency.withOpacity(0.1) 
+          : (appState.currentRisk == RiskLevel.high ? AppColors.warning.withOpacity(0.1) : AppColors.background),
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
@@ -79,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: appState.isEmergencyActive ? AppColors.emergency.withOpacity(0.2) : Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
@@ -88,10 +90,41 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       ],
                     ),
-                    child: const Icon(Icons.notifications, size: 20, color: AppColors.textPrimary),
+                    child: Icon(
+                      Icons.notifications, 
+                      size: 20, 
+                      color: appState.isEmergencyActive ? AppColors.emergency : AppColors.textPrimary
+                    ),
                   ),
                 ],
               ),
+              
+              if (appState.isEmergencyActive) ...[
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.emergency,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(color: AppColors.emergency.withOpacity(0.4), blurRadius: 12, offset: const Offset(0, 4))
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 28),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'ACTIVE EMERGENCY\nHelp is coordinating. Follow safety instructions.',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               
               const SizedBox(height: 24),
               

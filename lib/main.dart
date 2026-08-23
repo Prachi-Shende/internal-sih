@@ -8,6 +8,7 @@ import 'services/app_state.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/main_navigation.dart';
 import 'screens/auth/login_screen.dart';
+import 'services/api_service.dart';
 
 // Your web app's Firebase configuration
 const firebaseOptions = FirebaseOptions(
@@ -23,6 +24,7 @@ const firebaseOptions = FirebaseOptions(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: firebaseOptions);
+  await ApiService.init();
   runApp(
     MultiProvider(
       providers: [

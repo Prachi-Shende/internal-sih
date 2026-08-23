@@ -5,11 +5,13 @@ import '../theme/app_colors.dart';
 class FloatingBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final bool isEmergencyActive;
 
   const FloatingBottomNav({
     Key? key,
     required this.currentIndex,
     required this.onTap,
+    this.isEmergencyActive = false,
   }) : super(key: key);
 
   @override
@@ -18,11 +20,11 @@ class FloatingBottomNav extends StatelessWidget {
       margin: const EdgeInsets.only(left: 24, right: 24, bottom: 32),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.cardBackground,
+        color: isEmergencyActive ? AppColors.emergency : AppColors.cardBackground,
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: isEmergencyActive ? AppColors.emergency.withOpacity(0.4) : Colors.black.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -31,36 +33,41 @@ class FloatingBottomNav extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _NavItem(
-            icon: Icons.home,
-            label: 'Home',
-            isSelected: currentIndex == 0,
-            onTap: () => onTap(0),
-          ),
-          _NavItem(
-            icon: Icons.map,
-            label: 'Map',
-            isSelected: currentIndex == 1,
-            onTap: () => onTap(1),
-          ),
-          _NavItem(
-            icon: Icons.security,
-            label: 'Safety',
-            isSelected: currentIndex == 2,
-            onTap: () => onTap(2),
-          ),
-          _NavItem(
-            icon: Icons.work,
-            label: 'Trip',
-            isSelected: currentIndex == 3,
-            onTap: () => onTap(3),
-          ),
-          _NavItem(
-            icon: Icons.person,
-            label: 'Profile',
-            isSelected: currentIndex == 4,
-            onTap: () => onTap(4),
-          ),
+            _NavItem(
+              icon: Icons.home,
+              label: 'Home',
+              isSelected: currentIndex == 0,
+              isEmergencyActive: isEmergencyActive,
+              onTap: () => onTap(0),
+            ),
+            _NavItem(
+              icon: Icons.map,
+              label: 'Map',
+              isSelected: currentIndex == 1,
+              isEmergencyActive: isEmergencyActive,
+              onTap: () => onTap(1),
+            ),
+            _NavItem(
+              icon: Icons.security,
+              label: 'Safety',
+              isSelected: currentIndex == 2,
+              isEmergencyActive: isEmergencyActive,
+              onTap: () => onTap(2),
+            ),
+            _NavItem(
+              icon: Icons.work,
+              label: 'Trip',
+              isSelected: currentIndex == 3,
+              isEmergencyActive: isEmergencyActive,
+              onTap: () => onTap(3),
+            ),
+            _NavItem(
+              icon: Icons.person,
+              label: 'Profile',
+              isSelected: currentIndex == 4,
+              isEmergencyActive: isEmergencyActive,
+              onTap: () => onTap(4),
+            ),
         ],
       ),
     );
@@ -71,12 +78,14 @@ class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isSelected;
+  final bool isEmergencyActive;
   final VoidCallback onTap;
 
   const _NavItem({
     required this.icon,
     required this.label,
     required this.isSelected,
+    this.isEmergencyActive = false,
     required this.onTap,
   });
 
@@ -92,7 +101,9 @@ class _NavItem extends StatelessWidget {
           vertical: 8,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+          color: isSelected 
+              ? (isEmergencyActive ? Colors.white24 : AppColors.primary.withOpacity(0.1)) 
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -100,15 +111,17 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: isSelected 
+                  ? (isEmergencyActive ? Colors.white : AppColors.primary) 
+                  : (isEmergencyActive ? Colors.white70 : AppColors.textSecondary),
               size: 20,
             ),
             if (isSelected) ...[
               const SizedBox(width: 6),
               Text(
                 label,
-                style: const TextStyle(
-                  color: AppColors.primary,
+                style: TextStyle(
+                  color: isEmergencyActive ? Colors.white : AppColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),

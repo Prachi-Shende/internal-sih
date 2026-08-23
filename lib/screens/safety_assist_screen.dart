@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_colors.dart';
 import '../components/buttons.dart';
 import '../services/app_state.dart';
@@ -116,33 +117,18 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
 
               const SizedBox(height: 32),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // View other options
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('VIEW OTHERS'),
-                    ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => IncidentTimelineScreen(safeLocation: MockData.safeLocations.isNotEmpty ? MockData.safeLocations.first : null)));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.emergency,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                         Navigator.of(context).push(MaterialPageRoute(builder: (_) => const IncidentTimelineScreen()));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.emergency,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('EMERGENCY SOS'),
-                    ),
-                  ),
-                ],
+                  child: const Text('EMERGENCY SOS'),
+                ),
               ),
             ],
           ),
@@ -219,15 +205,23 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const IncidentTimelineScreen()));
+                onPressed: () async {
+                  final url = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lon}&travelmode=walking');
+                  try {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  } catch (e) {
+                    debugPrint('Could not launch map: $e');
+                  }
+                  if (context.mounted) {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => IncidentTimelineScreen(safeLocation: location)));
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                child: const Text('NAVIGATE'),
+                child: const Text('START NAVIGATION', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ],

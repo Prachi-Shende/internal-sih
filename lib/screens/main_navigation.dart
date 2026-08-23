@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/app_state.dart';
 import '../components/bottom_nav.dart';
 import 'home_screen.dart';
 import 'map_screen.dart';
@@ -26,6 +28,8 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    
     return Scaffold(
       body: Stack(
         children: [
@@ -41,6 +45,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
             bottom: 0,
             child: FloatingBottomNav(
               currentIndex: _currentIndex,
+              isEmergencyActive: appState.isEmergencyActive,
               onTap: (index) {
                 setState(() {
                   _currentIndex = index;
