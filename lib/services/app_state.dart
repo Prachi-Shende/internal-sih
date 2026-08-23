@@ -146,15 +146,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (AppConfig.MOCK_MODE) return; 
     
     final data = await ApiService.getUnifiedState();
-    if (data == null) {
-      // If the API completely fails (e.g. Wi-Fi and Data are turned off),
-      // we must instantly drop the system into Offline mode.
-      _systemState = SystemState.offline;
-      notifyListeners();
-      return;
-    }
-    
-    _currentLocation = LocationEstimate(
+    if (data != null) {
+      _currentLocation = LocationEstimate(
         lat: data['lat'],
         lon: data['lon'],
         source: data['source'],
@@ -192,6 +185,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       }
       
       notifyListeners();
+    }
   }
 
   Future<void> _fetchUserData(String uid) async {

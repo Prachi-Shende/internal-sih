@@ -42,34 +42,16 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _fetchRoute(double startLat, double startLon, double destLat, double destLon) async {
     try {
       final url = 'http://router.project-osrm.org/route/v1/foot/$startLon,$startLat;$destLon,$destLat?geometries=geojson';
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 3));
+      final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final coords = data['routes'][0]['geometry']['coordinates'] as List;
         setState(() {
           _routePoints = coords.map((c) => LatLng(c[1], c[0])).toList();
         });
-      } else {
-        throw Exception('Non-200 response');
       }
     } catch (e) {
-      debugPrint('Error fetching route (OSRM): $e');
-      // Offline fallback: draw a direct straight line (bird's eye compass path)
-      setState(() {
-        _routePoints = [
-          LatLng(startLat, startLon),
-          LatLng(destLat, destLon),
-        ];
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Offline Mode: Drawing direct compass path to safety.'),
-            backgroundColor: AppColors.primary,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+      debugPrint('Error fetching route: $e');
     }
   }
 

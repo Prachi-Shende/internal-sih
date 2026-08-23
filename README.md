@@ -65,3 +65,10 @@ flutter run
 
 ## 👥 Team
 Built for **Smart India Hackathon (SIH)**.
+- Diksha Thongire
+- Ayaansh Churi
+- Sourish Phate
+- Prachi Shende
+- Krish Shah
+- Shipra Singh
+

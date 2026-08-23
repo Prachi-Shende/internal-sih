@@ -5,7 +5,6 @@ import '../theme/app_colors.dart';
 import '../services/app_state.dart';
 import '../services/models.dart';
 import '../services/mock_data.dart';
-import '../components/cards.dart';
 import 'safety_assist_screen.dart';
 
 class SafetyScreen extends StatelessWidget {
@@ -40,44 +39,6 @@ class SafetyScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            StatusCard(
-              state: appState.systemState,
-              risk: appState.currentRisk,
-            ),
-            const SizedBox(height: 24),
-            if (appState.isEmergencyActive) ...[
-              GestureDetector(
-                onTap: () {
-                  appState.resolveIncident();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Emergency Resolved. System returned to normal.')),
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.only(bottom: 24),
-                  decoration: BoxDecoration(
-                    color: AppColors.sage,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(color: AppColors.sage.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
-                    ],
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.check_circle_outline, color: Colors.white, size: 28),
-                      SizedBox(width: 12),
-                      Text(
-                        'RESOLVE EMERGENCY',
-                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.2),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
             // Risk Level Radial Visual
             Center(
               child: Container(
