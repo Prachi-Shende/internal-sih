@@ -115,3 +115,61 @@ class TimelineEvent {
     required this.icon,
   });
 }
+
+/// Output of the RiskEngine computation.
+class RiskAssessment {
+  final RiskLevel risk;
+  final int score; // 0-100
+  final List<String> reasons;
+
+  const RiskAssessment({
+    required this.risk,
+    required this.score,
+    required this.reasons,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'risk': risk.name,
+        'score': score,
+        'reasons': reasons,
+      };
+}
+
+/// Structured Telemetry payload capturing live P1 & P2 telemetry signals.
+class TelemetryData {
+  final double lat;
+  final double lon;
+  final String locationSource;     // 'GPS', 'PDR', 'WIFI'
+  final LocationConfidence locationConfidence; // high, medium, low
+  final double uncertaintyMeters;  // e.g. 5.0m vs 85.0m
+  final bool isDegraded;           // true if GPS lost
+  final bool isStationary;         // true if stopped moving
+  final double? routeDeviationMeters; // distance off planned route
+
+  final String geofenceState;      // 'INSIDE', 'APPROACHING', 'OUTSIDE'
+  final double hotspotDistanceMeters; // distance to nearest hotspot center
+  final Hotspot? nearbyHotspot;
+  final String? hotspotRiskLevel;  // 'HIGH', 'MEDIUM', 'LOW'
+  final int reportedIncidents;     // incident count in zone
+
+  final DateTime currentTime;
+  final bool userReportedUnsafe;
+
+  TelemetryData({
+    required this.lat,
+    required this.lon,
+    required this.locationSource,
+    required this.locationConfidence,
+    required this.uncertaintyMeters,
+    required this.isDegraded,
+    required this.isStationary,
+    this.routeDeviationMeters,
+    required this.geofenceState,
+    required this.hotspotDistanceMeters,
+    this.nearbyHotspot,
+    this.hotspotRiskLevel,
+    required this.reportedIncidents,
+    required this.currentTime,
+    required this.userReportedUnsafe,
+  });
+}

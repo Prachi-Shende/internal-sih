@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,11 +9,18 @@ import 'mock_data.dart';
 import '../config.dart';
 import 'api_service.dart';
 import 'session_service.dart';
+import 'risk_engine.dart';
+import 'safe_haven_engine.dart';
 
 class AppState extends ChangeNotifier with WidgetsBindingObserver {
   SystemState _systemState = SystemState.normal;
   LocationEstimate _currentLocation = MockData.initialLocation;
   CommunicationStatus _communicationStatus = MockData.normalComm;
+  RiskAssessment _riskAssessment = const RiskAssessment(
+    risk: RiskLevel.low,
+    score: 0,
+    reasons: ['No significant risk factors detected'],
+  );
   RiskLevel _currentRisk = RiskLevel.low;
   bool _isEmergencyActive = false;
   
@@ -22,6 +30,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   Timer? _pollingTimer;
   StreamSubscription<Position>? _locationSubscription;
   final bool _isLocalOfflineQueueActive = false; // Source of truth for local offline queue
+  String _geofenceState = 'OUTSIDE'; // Tracks last P2 geofence state for transition detection
 
   AppState() {
     WidgetsBinding.instance.addObserver(this);
@@ -44,6 +53,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       // Reset state and fetch live data for the new user/session
       _isEmergencyActive = false;
       _currentLocation = MockData.initialLocation;
+      _recomputeRisk();
       _fetchUnifiedState();
       
       notifyListeners();
@@ -69,6 +79,13 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     super.dispose();
   }
 
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    var p = 0.017453292519943295;
+    var c = math.cos;
+    var a = 0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * math.asin(math.sqrt(a)) * 1000;
+  }
+
   Future<void> _startRealLocationTracking() async {
     if (AppConfig.MOCK_MODE) return;
 
@@ -83,7 +100,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     
     if (permission == LocationPermission.deniedForever) return;
 
-    // 1. Fetch immediate position first (since distance filter may never trigger if sitting still)
+    // 1. Fetch immediate position first
     try {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
@@ -124,6 +141,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       conf == LocationConfidence.high ? 0.9 : 0.5,
     );
 
+    _recomputeRisk();
     notifyListeners();
   }
 
@@ -142,8 +160,76 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _pollingTimer = null;
   }
 
+  /// Recomputes risk score and ranks Safe-Haven destinations (P3 Day 1 & Day 2)
+  void _recomputeRisk({bool userReportedUnsafe = false}) {
+    Hotspot? closestHotspot;
+    double minDistance = double.infinity;
+
+    for (final h in MockData.hotspots) {
+      double dist = _calculateDistance(
+        _currentLocation.lat,
+        _currentLocation.lon,
+        h.centerLat,
+        h.centerLon,
+      );
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestHotspot = h;
+      }
+    }
+
+    double uncertaintyMeters = 5.0;
+    if (_currentLocation.confidence == LocationConfidence.medium) uncertaintyMeters = 35.0;
+    if (_currentLocation.confidence == LocationConfidence.low) uncertaintyMeters = 95.0;
+
+    bool isDegraded = _currentLocation.source == 'PDR' || _systemState == SystemState.gpsDegraded;
+
+    final telemetry = TelemetryData(
+      lat: _currentLocation.lat,
+      lon: _currentLocation.lon,
+      locationSource: _currentLocation.source,
+      locationConfidence: _currentLocation.confidence,
+      uncertaintyMeters: uncertaintyMeters,
+      isDegraded: isDegraded,
+      isStationary: false,
+      routeDeviationMeters: null,
+      geofenceState: _geofenceState,
+      hotspotDistanceMeters: minDistance == double.infinity ? -1 : minDistance,
+      nearbyHotspot: closestHotspot,
+      hotspotRiskLevel: closestHotspot != null ? ApiService.riskLevelToString(closestHotspot.risk) : null,
+      reportedIncidents: closestHotspot?.reportedIncidents ?? 0,
+      currentTime: DateTime.now(),
+      userReportedUnsafe: userReportedUnsafe || _isEmergencyActive,
+    );
+
+    _riskAssessment = RiskEngine.assess(telemetry);
+    _currentRisk = _riskAssessment.risk;
+
+    // Rank Safe Locations using P3 SafeHavenEngine
+    MockData.safeLocations = SafeHavenEngine.rankLocations(
+      locations: MockData.safeLocations,
+      userLat: _currentLocation.lat,
+      userLon: _currentLocation.lon,
+      locationConfidence: _currentLocation.confidence,
+      hotspots: MockData.hotspots,
+    );
+
+    if (!AppConfig.MOCK_MODE) {
+      ApiService.postRiskAssessment(
+        riskLevel: _riskAssessment.risk,
+        score: _riskAssessment.score,
+        reasons: _riskAssessment.reasons,
+        hotspotId: closestHotspot?.id,
+      );
+    }
+  }
+
   Future<void> _fetchUnifiedState() async {
-    if (AppConfig.MOCK_MODE) return; 
+    if (AppConfig.MOCK_MODE) {
+      _recomputeRisk();
+      notifyListeners();
+      return;
+    }
     
     final data = await ApiService.getUnifiedState();
     if (data != null) {
@@ -153,8 +239,6 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         source: data['source'],
         confidence: ApiService.parseConfidence(data['confidence'].toDouble()),
       );
-      
-      _currentRisk = ApiService.parseRiskLevel(data['risk']);
       
       _communicationStatus = CommunicationStatus(
         internet: data['internet'],
@@ -172,7 +256,9 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         _systemState = SystemState.normal;
       }
 
-      // Inject live data into MockData so UI components naturally pick it up
+      final newGeofenceState = data['geofence_state'] as String? ?? 'OUTSIDE';
+      _geofenceState = newGeofenceState;
+
       final hotspots = await ApiService.getHotspots();
       if (hotspots.isNotEmpty) {
         MockData.mockHotspot = hotspots.first;
@@ -184,6 +270,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
         MockData.safeLocations = safeLocs;
       }
       
+      _recomputeRisk();
       notifyListeners();
     }
   }
@@ -205,40 +292,43 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
   SystemState get systemState => _systemState;
   LocationEstimate get currentLocation => _currentLocation;
   CommunicationStatus get communicationStatus => _communicationStatus;
-  RiskLevel get currentRisk => _currentRisk;
+  RiskAssessment get riskAssessment => _riskAssessment;
+  RiskLevel get currentRisk => _riskAssessment.risk;
   bool get isEmergencyActive => _isEmergencyActive;
   String get userName => _userName;
   String get userEmail => _userEmail;
+  String get geofenceState => _geofenceState;
 
   void activateSafetyAssist() {
     _isEmergencyActive = true;
-    _currentRisk = RiskLevel.high;
+    _recomputeRisk(userReportedUnsafe: true);
     
-    // Map enum to backend confidence float
-    double confidenceFloat = 0.5; // Medium default
+    double confidenceFloat = 0.5;
     if (_currentLocation.confidence == LocationConfidence.high) confidenceFloat = 0.9;
     if (_currentLocation.confidence == LocationConfidence.low) confidenceFloat = 0.2;
 
-    ApiService.createIncident(
-      _currentLocation.lat,
-      _currentLocation.lon,
-      _currentLocation.source,
-      confidenceFloat,
-    );
+    if (!AppConfig.MOCK_MODE) {
+      ApiService.createIncident(
+        _currentLocation.lat,
+        _currentLocation.lon,
+        _currentLocation.source,
+        confidenceFloat,
+        riskLevel: _currentRisk,
+      );
+    }
     
     notifyListeners();
   }
   
   void resolveIncident() {
     _isEmergencyActive = false;
-    _currentRisk = RiskLevel.low;
     _systemState = SystemState.normal;
+    _recomputeRisk(userReportedUnsafe: false);
     notifyListeners();
   }
 
-  // Demo overrides - these still work visually in MOCK_MODE
   void simulateGpsDegraded() {
-    if (!AppConfig.MOCK_MODE) return; // Prevent silent override when live
+    if (!AppConfig.MOCK_MODE) return;
     _systemState = SystemState.gpsDegraded;
     _currentLocation = LocationEstimate(
       lat: _currentLocation.lat,
@@ -246,6 +336,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
       source: 'PDR',
       confidence: LocationConfidence.medium,
     );
+    _recomputeRisk();
     notifyListeners();
   }
 
@@ -253,6 +344,7 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     if (!AppConfig.MOCK_MODE) return; 
     _systemState = SystemState.offline;
     _communicationStatus = MockData.offlineComm;
+    _recomputeRisk();
     notifyListeners();
   }
 
@@ -261,8 +353,8 @@ class AppState extends ChangeNotifier with WidgetsBindingObserver {
     _systemState = SystemState.normal;
     _currentLocation = MockData.initialLocation;
     _communicationStatus = MockData.normalComm;
-    _currentRisk = RiskLevel.low;
     _isEmergencyActive = false;
+    _recomputeRisk();
     notifyListeners();
   }
 }

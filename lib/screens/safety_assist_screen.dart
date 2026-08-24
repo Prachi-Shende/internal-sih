@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/app_colors.dart';
-import '../components/buttons.dart';
 import '../services/app_state.dart';
 import '../services/mock_data.dart';
 import '../services/models.dart';
@@ -28,6 +26,9 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final locations = MockData.safeLocations;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -36,7 +37,7 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: AppColors.textPrimary),
           onPressed: () {
-            context.read<AppState>().resolveIncident();
+            // Keep emergency active so other screens/tabs show CRITICAL until explicitly resolved!
             Navigator.of(context).pop();
           },
         ),
@@ -49,6 +50,22 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          if (appState.isEmergencyActive)
+            TextButton.icon(
+              onPressed: () {
+                context.read<AppState>().resolveIncident();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Safety alert resolved. Status returned to normal.')),
+                );
+              },
+              icon: const Icon(Icons.check_circle_outline, color: AppColors.sage, size: 18),
+              label: const Text(
+                'I AM SAFE NOW',
+                style: TextStyle(color: AppColors.sage, fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+            ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -67,7 +84,7 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
               ),
               const SizedBox(height: 24),
               
-              // Current state context
+              // Live position & system telemetry banner
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -80,18 +97,22 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.warning.withOpacity(0.1),
+                        color: AppColors.emergency.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.location_off, color: AppColors.warning, size: 20),
+                      child: const Icon(Icons.warning_amber_rounded, color: AppColors.emergency, size: 20),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text('Current Location', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                          Text('Medium confidence (PDR)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        children: [
+                          const Text('EMERGENCY SOS ACTIVE', style: TextStyle(fontSize: 11, color: AppColors.emergency, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${appState.currentLocation.source} fix (${appState.currentLocation.confidence.name} confidence)',
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
                         ],
                       ),
                     ),
@@ -101,19 +122,25 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
 
               const SizedBox(height: 32),
               
-              const Text(
-                'SAFER PLACES NEARBY',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppColors.textSecondary,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    'RANKED SAFE HAVENS (SAFEST CHOICE FIRST)',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.1,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
-              // Safe places list
-              ...MockData.safeLocations.map((location) => _buildSafeLocationCard(context, location)).toList(),
+              // Render Safe Locations ranked dynamically by P3 SafeHavenEngine
+              for (int i = 0; i < locations.length; i++)
+                _buildSafeLocationCard(context, locations[i], isBest: i == 0),
 
               const SizedBox(height: 32),
 
@@ -121,13 +148,19 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => IncidentTimelineScreen(safeLocation: MockData.safeLocations.isNotEmpty ? MockData.safeLocations.first : null)));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => IncidentTimelineScreen(
+                          safeLocation: locations.isNotEmpty ? locations.first : null,
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.emergency,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('EMERGENCY SOS'),
+                  child: const Text('TRIGGER EMERGENCY SOS'),
                 ),
               ),
             ],
@@ -137,9 +170,7 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
     );
   }
 
-  Widget _buildSafeLocationCard(BuildContext context, SafeLocation location) {
-    bool isBest = location.score >= 90;
-    
+  Widget _buildSafeLocationCard(BuildContext context, SafeLocation location, {required bool isBest}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -152,52 +183,99 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
             offset: const Offset(0, 4),
           )
         ],
-        border: isBest ? Border.all(color: AppColors.sage, width: 2) : null,
+        border: isBest ? Border.all(color: AppColors.sage, width: 2.5) : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isBest)
-              Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.sage.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'BEST OPTION',
-                  style: TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
-                ),
-              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (isBest)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.sage.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      '⭐ BEST OPTION (SAFEST)',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  )
+                else
+                  Text(
+                    location.type.toUpperCase(),
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                
+                // Safe Arrival Score Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: (location.score >= 80 ? AppColors.sage : AppColors.warning).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'SCORE: ${location.score} / 100',
+                    style: TextStyle(
+                      color: location.score >= 80 ? AppColors.primary : AppColors.warning,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Text(
                     location.name,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   '${location.distance.toInt()} m',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.check_circle, size: 14, color: AppColors.sage),
+                const Icon(Icons.check_circle, size: 14, color: AppColors.sage),
                 const SizedBox(width: 4),
                 Text(location.type, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
                 const SizedBox(width: 12),
                 if (location.isOpen) ...[
                   const Icon(Icons.access_time, size: 14, color: AppColors.sage),
                   const SizedBox(width: 4),
-                  const Text('Open now', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+                  const Text('Open 24/7', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
                 ]
               ],
             ),
@@ -213,15 +291,22 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
                     debugPrint('Could not launch map: $e');
                   }
                   if (context.mounted) {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => IncidentTimelineScreen(safeLocation: location)));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => IncidentTimelineScreen(safeLocation: location),
+                      ),
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: isBest ? AppColors.primary : AppColors.sage,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                child: const Text('START NAVIGATION', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text(
+                  'START NAVIGATION (${location.distance.toInt()}m)',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
