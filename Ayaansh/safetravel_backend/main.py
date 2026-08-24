@@ -18,7 +18,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import engine, Base, SessionLocal
-from routers import location, hotspots, safe_locations, risk, incidents, sync, status, report
+from routers import location, hotspots, safe_locations, risk, incidents, sync, status, report, safety_events
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("safetravel")
@@ -137,6 +137,7 @@ app.include_router(risk.router,           prefix="/risk",           tags=["Risk 
 app.include_router(incidents.router,      prefix="/incident",       tags=["Incidents"])
 app.include_router(sync.router,           prefix="/sync",           tags=["Offline Sync (P4)"])
 app.include_router(report.router,         prefix="/report",         tags=["Reports & PDF Export"])
+app.include_router(safety_events.router,  prefix="/api",            tags=["P1 Safety Events Contract"])
 app.include_router(status.router,                                   tags=["Status & Unified State"])
 
 

@@ -114,3 +114,51 @@ class TimelineEvent {
     required this.icon,
   });
 }
+
+class BreadcrumbPoint {
+  final double lat;
+  final double lon;
+  final String source; // 'GPS', 'PDR', 'WIFI'
+  final bool isEstimated; // true if PDR/WIFI, false if GPS
+  final DateTime timestamp;
+  final double? speed;
+  final double? heading;
+  final RiskLevel riskLevel;
+
+  BreadcrumbPoint({
+    required this.lat,
+    required this.lon,
+    required this.source,
+    required this.isEstimated,
+    required this.timestamp,
+    this.speed,
+    this.heading,
+    this.riskLevel = RiskLevel.low,
+  });
+}
+
+class JourneySummary {
+  final String id;
+  final String title;
+  final DateTime startTime;
+  final DateTime endTime;
+  final double distanceMeters;
+  final int stepCount;
+  final List<BreadcrumbPoint> routePoints;
+  final int safetyEventsCount;
+  final int riskAlertsCount;
+
+  JourneySummary({
+    required this.id,
+    required this.title,
+    required this.startTime,
+    required this.endTime,
+    required this.distanceMeters,
+    required this.stepCount,
+    required this.routePoints,
+    this.safetyEventsCount = 0,
+    this.riskAlertsCount = 0,
+  });
+
+  Duration get duration => endTime.difference(startTime);
+}

@@ -3,6 +3,7 @@
 Complete Verification Suite for SafeTravel FastAPI Backend.
 Tests all routes and features including PDF generation, risk calculation, and real-time state.
 """
+import time
 from fastapi.testclient import TestClient
 from main import app
 
@@ -85,14 +86,46 @@ def run_tests():
     assert r.content.startswith(b"%PDF-1.4")
     print(f"[PASS] 10. GET /report/pdf     -> 200 OK ({len(r.content)} bytes valid PDF-1.4)")
 
-    # 8. Status
+    # 8. P1 SafetyEvent Contract Ingestion
+    test_event_id = f"SOS-TEST-{int(time.time()*1000)}"
+    r = client.post("/api/safety-events", json={
+        "eventId": test_event_id,
+        "eventType": "sos",
+        "timestamp": "2026-08-24T12:00:00.000Z",
+        "latitude": 19.0760,
+        "longitude": 72.8777,
+        "positionSource": "gps",
+        "confidence": 0.96,
+        "uncertaintyMeters": 3.8,
+        "positioningMode": "gps",
+        "gpsHealth": "active",
+        "internetAvailable": True,
+        "eventStatus": "sent",
+        "deliveryChannel": "HTTP",
+        "metadata": {"session_id": "session-live-device-v2303"}
+    })
+    assert r.status_code == 201, f"SafetyEvent POST failed: {r.status_code}"
+    print("[PASS] 11. POST /api/safety-events -> 201 Created (P1 Contract Ingestion)")
+
+    # Idempotent duplicate check
+    r_dup = client.post("/api/safety-events", json={
+        "eventId": test_event_id,
+        "eventType": "sos",
+        "metadata": {"session_id": "session-live-device-v2303"}
+    })
+    assert r_dup.status_code == 200, f"Duplicate SafetyEvent expected 200, got {r_dup.status_code}"
+    assert r_dup.json().get("duplicate") is True
+    print("[PASS] 12. POST /api/safety-events (duplicate) -> 200 OK (Idempotency Verified)")
+
+    # 9. Status
     r = client.get("/status")
     assert r.status_code == 200, f"Status failed: {r.status_code}"
-    print("[PASS] 11. GET /status         -> 200 OK")
+    print("[PASS] 13. GET  /status        -> 200 OK")
 
     print("="*60)
-    print("      ALL 11 BACKEND API VERIFICATIONS PASSED 100%!")
+    print("      ALL 13 BACKEND API VERIFICATIONS PASSED 100%!")
     print("="*60 + "\n")
 
 if __name__ == "__main__":
     run_tests()
+

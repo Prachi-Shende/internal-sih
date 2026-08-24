@@ -120,7 +120,12 @@ class SafetyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             
-            _buildReasonRow(Icons.location_on, 'Location Confidence', 'High', true),
+            _buildReasonRow(
+              appState.currentLocation.source == 'GPS' ? Icons.location_on : Icons.directions_walk,
+              'Location Confidence',
+              '${appState.currentLocation.confidence.name.toUpperCase()} (${appState.currentLocation.source})',
+              appState.currentLocation.confidence != LocationConfidence.low,
+            ),
             _buildReasonRow(Icons.people, 'Reported Incidents', 'Very low in this area', true),
             _buildReasonRow(Icons.wb_sunny, 'Time of Day', 'Daylight hours', true),
             if (appState.currentRisk != RiskLevel.low)

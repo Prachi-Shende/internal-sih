@@ -28,6 +28,7 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -75,31 +76,57 @@ class _SafetyAssistScreenState extends State<SafetyAssistScreen> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.divider),
                 ),
-                child: Row(
+                child: Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.warning.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.location_off, color: AppColors.warning, size: 20),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: appState.currentLocation.source == 'GPS' ? AppColors.sage.withOpacity(0.15) : AppColors.warning.withOpacity(0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            appState.currentLocation.source == 'GPS' ? Icons.location_on : Icons.directions_walk,
+                            color: appState.currentLocation.source == 'GPS' ? AppColors.primary : AppColors.warning,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Active Positioning Fix', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                              Text(
+                                '${appState.currentLocation.confidence.name.toUpperCase()} confidence (${appState.currentLocation.source})',
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    if (!appState.communicationStatus.internet) ...[
+                      const Divider(height: 20),
+                      Row(
                         children: const [
-                          Text('Current Location', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                          Text('Medium confidence (PDR)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                          Icon(Icons.cloud_off, size: 16, color: Colors.orange),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Saved offline — will sync when connection returns.',
+                              style: TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.w600),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               
               const Text(
                 'SAFER PLACES NEARBY',

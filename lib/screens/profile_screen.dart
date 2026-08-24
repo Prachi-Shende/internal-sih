@@ -15,6 +15,10 @@ import 'profile/location_permissions_screen.dart';
 import 'profile/offline_maps_screen.dart';
 import 'profile/offline_data_screen.dart';
 import 'profile/incident_history_screen.dart';
+import 'travel_history_screen.dart';
+import 'developer/resilience_diagnostic_screen.dart';
+import 'developer/resilience_demo_screen.dart';
+import 'developer/simulation_sandbox_screen.dart';
 
 
 class ProfileScreen extends StatelessWidget {
@@ -85,6 +89,7 @@ class ProfileScreen extends StatelessWidget {
             
             const SizedBox(height: 24),
             _buildSectionHeader('HISTORY & REPORTS'),
+            _buildListTile(context, Icons.route, 'Travel & Safety History', const TravelHistoryScreen()),
             _buildListTile(context, Icons.history, 'Incident History', const IncidentHistoryScreen()),
             _buildActionTile(
               context,
@@ -114,6 +119,12 @@ class ProfileScreen extends StatelessWidget {
             _buildSectionHeader('OFFLINE'),
             _buildListTile(context, Icons.map, 'Offline Maps', const OfflineMapsScreen()),
             _buildListTile(context, Icons.storage, 'Offline Safety Data', const OfflineDataScreen()),
+
+            const SizedBox(height: 24),
+            _buildSectionHeader('DEVELOPER & JUDGE LAB'),
+            _buildListTile(context, Icons.verified_user, 'Resilience 4-Case Demo', const ResilienceDemoScreen()),
+            _buildListTile(context, Icons.developer_mode, 'P1 Sensor Diagnostics & Telemetry', const ResilienceDiagnosticScreen()),
+            _buildListTile(context, Icons.science, 'Developer Simulation Sandbox', const SimulationSandboxScreen()),
             
             const SizedBox(height: 32),
             SizedBox(

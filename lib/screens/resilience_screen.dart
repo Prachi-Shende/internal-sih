@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../theme/app_colors.dart';
 import '../services/app_state.dart';
 import '../services/models.dart';
+import 'developer/resilience_demo_screen.dart';
+import 'developer/resilience_diagnostic_screen.dart';
 
 class ResilienceScreen extends StatelessWidget {
   const ResilienceScreen({Key? key}) : super(key: key);
@@ -111,6 +113,47 @@ class ResilienceScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _buildGeofenceBadge(appState.geofenceState),
+
+            const SizedBox(height: 32),
+            const Text(
+              'ENGINE & JUDGE TOOLS',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary, letterSpacing: 1.2),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ResilienceDemoScreen()));
+                    },
+                    icon: const Icon(Icons.verified_user, size: 16, color: AppColors.primary),
+                    label: const Text('4-Case Demo', style: TextStyle(fontSize: 12, color: AppColors.primary)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(color: AppColors.primary),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ResilienceDiagnosticScreen()));
+                    },
+                    icon: const Icon(Icons.developer_mode, size: 16, color: Colors.white),
+                    label: const Text('Diagnostics', style: TextStyle(fontSize: 12, color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
           ],
         ),
       ),
