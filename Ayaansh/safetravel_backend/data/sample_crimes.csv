@@ -1,0 +1,251 @@
+lat,lon,crime_type,date,severity,source
+19.105575,72.877293,robbery,2026-07-22,3,Mumbai Police FIR Dataset 2024
+19.045856,72.794579,robbery,2026-06-16,3,NCRB 2024
+19.076279,72.87675,theft,2026-08-15,3,Mumbai Police FIR Dataset 2024
+19.212772,72.927568,theft,2026-05-31,1,Smart City Crime Reports
+19.182229,72.822855,harassment,2026-05-26,5,Mumbai Police FIR Dataset 2024
+19.076114,72.878069,theft,2026-07-28,3,Mumbai Police FIR Dataset 2024
+19.128967,72.787884,theft,2026-06-22,1,Smart City Crime Reports
+19.099304,72.869245,harassment,2026-08-13,5,NCRB 2024
+18.922166,72.96081,harassment,2026-07-15,3,Mumbai Police FIR Dataset 2024
+19.105162,72.887871,theft,2026-05-30,4,NCRB 2024
+19.05449,72.84325,robbery,2026-08-16,3,Mumbai Police FIR Dataset 2024
+18.942505,72.958185,assault,2026-05-25,1,NCRB 2024
+18.980941,72.88641,robbery,2026-07-11,3,NCRB 2024
+19.231656,72.93804,vandalism,2026-06-22,1,Smart City Crime Reports
+19.075925,72.87724,assault,2026-07-25,5,Mumbai Police FIR Dataset 2024
+19.169133,72.852102,pickpocketing,2026-06-08,3,Smart City Crime Reports
+18.922596,72.925599,robbery,2026-06-03,1,NCRB 2024
+19.055295,72.782716,assault,2026-06-20,5,Mumbai Police FIR Dataset 2024
+19.050189,72.898139,vandalism,2026-08-13,1,NCRB 2024
+19.12272,72.804017,theft,2026-08-01,5,NCRB 2024
+18.94822,72.835661,theft,2026-08-04,4,Mumbai Police FIR Dataset 2024
+18.937536,72.991233,vandalism,2026-05-26,4,Mumbai Police FIR Dataset 2024
+18.949725,72.836041,assault,2026-08-14,5,Mumbai Police FIR Dataset 2024
+19.053726,72.84243,robbery,2026-07-25,3,Mumbai Police FIR Dataset 2024
+19.215395,72.999142,robbery,2026-07-22,3,Smart City Crime Reports
+19.112695,72.817273,harassment,2026-08-10,5,NCRB 2024
+19.054214,72.843758,theft,2026-07-25,3,Mumbai Police FIR Dataset 2024
+19.119348,72.908339,robbery,2026-07-25,4,Mumbai Police FIR Dataset 2024
+19.009492,72.968884,robbery,2026-07-14,3,Smart City Crime Reports
+19.167173,72.777916,robbery,2026-07-26,2,NCRB 2024
+19.026864,72.81411,pickpocketing,2026-06-24,2,Smart City Crime Reports
+19.119808,72.909477,theft,2026-08-23,5,Mumbai Police FIR Dataset 2024
+19.14064,73.015624,theft,2026-06-01,4,Smart City Crime Reports
+19.075845,72.877256,robbery,2026-08-17,3,Mumbai Police FIR Dataset 2024
+18.922562,72.792975,robbery,2026-05-31,1,Mumbai Police FIR Dataset 2024
+19.115584,72.860706,vandalism,2026-06-14,3,NCRB 2024
+18.939745,72.835969,robbery,2026-07-29,3,Mumbai Police FIR Dataset 2024
+19.076011,72.876753,assault,2026-08-17,5,Mumbai Police FIR Dataset 2024
+19.013357,72.87072,vandalism,2026-07-17,2,Mumbai Police FIR Dataset 2024
+19.022519,73.034662,vandalism,2026-07-12,3,Smart City Crime Reports
+19.070767,72.913029,harassment,2026-06-26,2,Smart City Crime Reports
+19.017706,72.844145,theft,2026-08-04,5,Mumbai Police FIR Dataset 2024
+19.070336,72.915675,assault,2026-08-12,1,NCRB 2024
+19.23593,72.787874,harassment,2026-06-09,1,NCRB 2024
+18.948624,72.836295,assault,2026-08-19,4,Mumbai Police FIR Dataset 2024
+18.931423,72.914766,robbery,2026-07-18,4,Mumbai Police FIR Dataset 2024
+18.938547,72.768965,pickpocketing,2026-06-25,3,Smart City Crime Reports
+18.939734,72.835858,assault,2026-08-02,5,Mumbai Police FIR Dataset 2024
+19.039191,73.024029,robbery,2026-07-06,2,NCRB 2024
+19.198373,73.040987,robbery,2026-08-14,3,NCRB 2024
+19.119131,72.951702,robbery,2026-06-10,3,Mumbai Police FIR Dataset 2024
+19.17822,72.834852,vandalism,2026-07-16,5,Smart City Crime Reports
+19.076218,72.877042,theft,2026-07-31,3,Mumbai Police FIR Dataset 2024
+19.076181,72.876764,theft,2026-08-21,3,Mumbai Police FIR Dataset 2024
+19.005791,72.980939,theft,2026-05-26,5,NCRB 2024
+19.013246,73.035456,pickpocketing,2026-08-19,3,Mumbai Police FIR Dataset 2024
+18.949118,72.834606,theft,2026-07-30,5,Mumbai Police FIR Dataset 2024
+19.164791,72.811562,assault,2026-06-14,5,Mumbai Police FIR Dataset 2024
+18.896258,73.019851,harassment,2026-07-30,1,Smart City Crime Reports
+19.196197,72.879021,robbery,2026-07-25,3,NCRB 2024
+18.940799,72.836072,theft,2026-08-21,3,Mumbai Police FIR Dataset 2024
+19.054217,72.843897,theft,2026-08-20,5,Mumbai Police FIR Dataset 2024
+18.939357,72.8349,theft,2026-07-25,4,Mumbai Police FIR Dataset 2024
+19.134861,72.864271,vandalism,2026-06-08,3,NCRB 2024
+19.016616,72.845234,assault,2026-08-14,3,Mumbai Police FIR Dataset 2024
+18.859915,72.970969,robbery,2026-07-12,2,NCRB 2024
+19.184383,72.92256,pickpocketing,2026-08-21,3,Smart City Crime Reports
+18.900488,72.950838,assault,2026-06-12,4,Smart City Crime Reports
+18.916018,72.890217,vandalism,2026-08-07,5,Mumbai Police FIR Dataset 2024
+19.009861,72.794271,theft,2026-05-27,1,NCRB 2024
+18.948082,72.834394,theft,2026-08-20,5,Mumbai Police FIR Dataset 2024
+18.972649,72.819161,harassment,2026-07-30,1,Smart City Crime Reports
+18.94259,72.962087,robbery,2026-05-26,1,Smart City Crime Reports
+19.018007,72.844823,assault,2026-07-29,5,Mumbai Police FIR Dataset 2024
+18.963736,72.893614,assault,2026-07-11,1,NCRB 2024
+18.866093,72.976881,vandalism,2026-06-24,4,NCRB 2024
+18.86148,73.005286,robbery,2026-07-31,2,NCRB 2024
+19.228824,72.944313,robbery,2026-08-04,3,Smart City Crime Reports
+19.017869,72.845259,theft,2026-08-22,4,Mumbai Police FIR Dataset 2024
+18.937602,72.80704,pickpocketing,2026-07-22,2,Smart City Crime Reports
+19.148069,72.999852,assault,2026-07-18,5,NCRB 2024
+18.911196,72.802841,pickpocketing,2026-06-18,3,Smart City Crime Reports
+19.120164,72.909932,assault,2026-07-30,3,Mumbai Police FIR Dataset 2024
+18.938989,72.835718,robbery,2026-08-12,4,Mumbai Police FIR Dataset 2024
+19.237283,73.034703,theft,2026-06-26,2,Smart City Crime Reports
+19.018384,72.784095,robbery,2026-08-15,4,NCRB 2024
+18.889885,73.023133,pickpocketing,2026-08-22,2,NCRB 2024
+19.040792,73.032822,robbery,2026-07-16,4,Smart City Crime Reports
+19.093319,72.769705,vandalism,2026-07-19,5,Smart City Crime Reports
+19.021445,73.010055,theft,2026-07-31,3,NCRB 2024
+19.053933,72.842422,assault,2026-08-02,4,Mumbai Police FIR Dataset 2024
+18.939878,72.835847,assault,2026-07-26,5,Mumbai Police FIR Dataset 2024
+19.075185,72.876893,robbery,2026-07-27,5,Mumbai Police FIR Dataset 2024
+19.017577,72.845411,theft,2026-07-27,3,Mumbai Police FIR Dataset 2024
+18.993385,72.879206,vandalism,2026-07-23,4,Smart City Crime Reports
+19.119755,72.909513,theft,2026-07-24,5,Mumbai Police FIR Dataset 2024
+18.94337,72.829366,vandalism,2026-06-04,2,NCRB 2024
+18.883918,72.904636,vandalism,2026-06-03,3,Mumbai Police FIR Dataset 2024
+18.888877,73.016178,robbery,2026-08-06,4,NCRB 2024
+19.075529,72.876787,assault,2026-08-09,3,Mumbai Police FIR Dataset 2024
+19.070506,72.865076,vandalism,2026-06-08,2,Mumbai Police FIR Dataset 2024
+19.016201,72.810238,harassment,2026-06-15,5,Smart City Crime Reports
+18.893185,72.96372,theft,2026-06-28,1,NCRB 2024
+18.874092,73.038033,assault,2026-08-11,2,NCRB 2024
+19.118942,72.908749,theft,2026-08-13,5,Mumbai Police FIR Dataset 2024
+18.951956,73.036078,robbery,2026-05-28,1,Mumbai Police FIR Dataset 2024
+19.016855,72.844217,theft,2026-07-26,4,Mumbai Police FIR Dataset 2024
+18.934031,72.824859,harassment,2026-08-10,5,NCRB 2024
+19.210678,72.943448,robbery,2026-08-16,3,Mumbai Police FIR Dataset 2024
+19.095429,72.94281,vandalism,2026-08-20,3,Mumbai Police FIR Dataset 2024
+18.940237,72.83471,theft,2026-08-14,3,Mumbai Police FIR Dataset 2024
+18.873855,72.987789,pickpocketing,2026-06-08,5,NCRB 2024
+18.950909,72.774572,pickpocketing,2026-08-21,5,Mumbai Police FIR Dataset 2024
+19.166273,72.754176,theft,2026-06-16,4,NCRB 2024
+19.146388,73.041543,pickpocketing,2026-08-12,5,Mumbai Police FIR Dataset 2024
+19.0534,72.842854,assault,2026-07-25,3,Mumbai Police FIR Dataset 2024
+19.054539,72.842738,assault,2026-08-05,5,Mumbai Police FIR Dataset 2024
+19.175221,72.8199,vandalism,2026-08-05,1,NCRB 2024
+19.021955,72.923995,harassment,2026-06-01,4,NCRB 2024
+18.952497,72.860669,vandalism,2026-06-07,1,Mumbai Police FIR Dataset 2024
+19.076946,72.877457,robbery,2026-08-06,5,Mumbai Police FIR Dataset 2024
+19.140897,73.022626,vandalism,2026-05-31,3,NCRB 2024
+19.249963,72.854988,theft,2026-06-01,1,Mumbai Police FIR Dataset 2024
+18.898893,72.856079,robbery,2026-05-30,1,NCRB 2024
+19.07207,72.822097,pickpocketing,2026-06-24,4,NCRB 2024
+19.097884,72.822249,assault,2026-06-10,2,NCRB 2024
+19.166296,72.817706,robbery,2026-06-18,4,NCRB 2024
+18.939183,72.835473,robbery,2026-08-19,3,Mumbai Police FIR Dataset 2024
+19.118194,72.972942,robbery,2026-06-15,5,Smart City Crime Reports
+19.178932,72.781662,pickpocketing,2026-07-08,4,Smart City Crime Reports
+18.948663,72.836292,robbery,2026-08-07,5,Mumbai Police FIR Dataset 2024
+19.053414,72.842916,theft,2026-07-27,3,Mumbai Police FIR Dataset 2024
+19.118957,72.909251,theft,2026-08-06,4,Mumbai Police FIR Dataset 2024
+19.133207,72.787975,theft,2026-08-18,5,NCRB 2024
+18.896137,73.04112,vandalism,2026-08-01,3,Mumbai Police FIR Dataset 2024
+18.938997,72.835205,theft,2026-08-13,3,Mumbai Police FIR Dataset 2024
+18.85406,73.034419,assault,2026-08-13,4,NCRB 2024
+19.08699,72.846691,theft,2026-07-23,3,NCRB 2024
+18.895911,72.817443,harassment,2026-08-04,2,Mumbai Police FIR Dataset 2024
+19.168491,72.91978,harassment,2026-08-18,5,NCRB 2024
+18.888866,72.938237,harassment,2026-08-18,4,Mumbai Police FIR Dataset 2024
+19.114171,72.797117,vandalism,2026-08-01,1,Mumbai Police FIR Dataset 2024
+18.913679,72.960383,theft,2026-07-06,4,Mumbai Police FIR Dataset 2024
+19.008322,72.752429,pickpocketing,2026-05-28,1,Smart City Crime Reports
+18.929829,73.025536,harassment,2026-07-10,2,Mumbai Police FIR Dataset 2024
+19.090164,72.855494,vandalism,2026-06-11,2,Mumbai Police FIR Dataset 2024
+18.861548,72.939007,pickpocketing,2026-07-24,2,NCRB 2024
+19.085541,72.754734,theft,2026-07-21,2,Smart City Crime Reports
+19.08183,72.969708,harassment,2026-08-12,3,Smart City Crime Reports
+18.908942,72.763864,vandalism,2026-06-24,1,NCRB 2024
+19.249749,73.006001,assault,2026-08-10,4,Smart City Crime Reports
+19.055183,72.843039,assault,2026-08-05,3,Mumbai Police FIR Dataset 2024
+18.949622,72.834323,theft,2026-07-31,5,Mumbai Police FIR Dataset 2024
+19.198159,72.99127,theft,2026-06-25,2,Mumbai Police FIR Dataset 2024
+18.948425,72.835469,assault,2026-07-26,4,Mumbai Police FIR Dataset 2024
+19.024423,72.905976,pickpocketing,2026-06-16,2,NCRB 2024
+19.132165,72.874647,robbery,2026-06-23,2,NCRB 2024
+19.119962,72.908758,theft,2026-07-26,4,Mumbai Police FIR Dataset 2024
+18.877368,72.939348,assault,2026-07-18,1,NCRB 2024
+19.076619,72.876713,theft,2026-07-29,5,Mumbai Police FIR Dataset 2024
+19.143814,72.931114,theft,2026-08-20,2,Smart City Crime Reports
+19.013318,72.791933,harassment,2026-08-19,4,Mumbai Police FIR Dataset 2024
+19.241335,72.978111,theft,2026-05-25,4,Mumbai Police FIR Dataset 2024
+19.027353,73.035167,theft,2026-07-08,3,Smart City Crime Reports
+19.025661,72.890609,pickpocketing,2026-07-16,4,NCRB 2024
+19.015776,72.93893,pickpocketing,2026-07-30,4,NCRB 2024
+19.043679,72.967376,vandalism,2026-06-17,3,Mumbai Police FIR Dataset 2024
+19.147462,72.892402,assault,2026-07-21,3,Smart City Crime Reports
+19.183051,72.838874,assault,2026-07-08,3,Mumbai Police FIR Dataset 2024
+19.016672,72.844338,theft,2026-08-06,4,Mumbai Police FIR Dataset 2024
+18.948322,72.836186,assault,2026-07-26,4,Mumbai Police FIR Dataset 2024
+18.959174,72.895693,harassment,2026-07-05,4,Smart City Crime Reports
+19.076403,72.877539,assault,2026-08-09,4,Mumbai Police FIR Dataset 2024
+18.958686,72.845913,theft,2026-06-15,2,Mumbai Police FIR Dataset 2024
+19.076237,72.878423,theft,2026-08-05,5,Mumbai Police FIR Dataset 2024
+18.993584,72.838762,harassment,2026-05-26,1,Smart City Crime Reports
+18.949544,72.83591,robbery,2026-08-11,3,Mumbai Police FIR Dataset 2024
+18.893361,72.880369,robbery,2026-07-14,5,Smart City Crime Reports
+19.03193,72.844355,theft,2026-07-13,4,Smart City Crime Reports
+19.248653,72.915117,pickpocketing,2026-07-09,4,NCRB 2024
+19.21321,72.862592,theft,2026-07-29,5,Smart City Crime Reports
+18.939958,72.835484,robbery,2026-07-31,3,Mumbai Police FIR Dataset 2024
+18.960499,72.987002,harassment,2026-07-01,5,NCRB 2024
+18.947545,72.889413,pickpocketing,2026-06-06,4,NCRB 2024
+19.077642,72.871823,harassment,2026-08-23,3,Mumbai Police FIR Dataset 2024
+19.120607,72.910145,theft,2026-07-25,5,Mumbai Police FIR Dataset 2024
+19.118842,72.908776,robbery,2026-08-02,3,Mumbai Police FIR Dataset 2024
+19.119935,72.891443,vandalism,2026-06-05,3,Smart City Crime Reports
+19.235888,72.78243,harassment,2026-08-20,5,Smart City Crime Reports
+19.182709,72.777969,pickpocketing,2026-08-11,3,Mumbai Police FIR Dataset 2024
+18.949652,72.834827,theft,2026-08-07,5,Mumbai Police FIR Dataset 2024
+19.072548,72.92594,vandalism,2026-06-13,3,Smart City Crime Reports
+19.017286,72.844975,robbery,2026-07-27,5,Mumbai Police FIR Dataset 2024
+19.053777,72.842692,assault,2026-08-02,4,Mumbai Police FIR Dataset 2024
+19.119179,72.908782,theft,2026-08-05,3,Mumbai Police FIR Dataset 2024
+18.939613,72.835363,robbery,2026-07-27,3,Mumbai Police FIR Dataset 2024
+19.018142,72.844874,theft,2026-08-15,5,Mumbai Police FIR Dataset 2024
+18.940416,72.836112,theft,2026-08-20,5,Mumbai Police FIR Dataset 2024
+19.075279,72.876905,assault,2026-07-31,3,Mumbai Police FIR Dataset 2024
+19.07634,72.878104,assault,2026-08-02,3,Mumbai Police FIR Dataset 2024
+18.884072,72.824457,robbery,2026-06-13,5,Smart City Crime Reports
+19.177369,72.975341,harassment,2026-05-29,2,Mumbai Police FIR Dataset 2024
+18.93937,72.835793,assault,2026-07-31,5,Mumbai Police FIR Dataset 2024
+19.075139,72.878023,robbery,2026-07-30,3,Mumbai Police FIR Dataset 2024
+19.017484,72.845011,theft,2026-08-06,3,Mumbai Police FIR Dataset 2024
+19.014658,72.898641,robbery,2026-05-31,5,Mumbai Police FIR Dataset 2024
+19.17328,72.911452,robbery,2026-06-23,4,Smart City Crime Reports
+19.105797,73.041328,harassment,2026-08-17,2,Mumbai Police FIR Dataset 2024
+19.226425,72.893319,robbery,2026-08-15,4,Mumbai Police FIR Dataset 2024
+19.194056,72.967265,vandalism,2026-07-04,3,Mumbai Police FIR Dataset 2024
+18.925033,72.858534,pickpocketing,2026-06-21,4,Mumbai Police FIR Dataset 2024
+19.018478,72.843869,theft,2026-08-20,5,Mumbai Police FIR Dataset 2024
+18.94967,72.835802,assault,2026-07-30,4,Mumbai Police FIR Dataset 2024
+19.043839,72.821774,theft,2026-06-28,3,Mumbai Police FIR Dataset 2024
+18.990458,72.902822,vandalism,2026-05-29,3,Mumbai Police FIR Dataset 2024
+18.948123,72.83517,theft,2026-08-09,5,Mumbai Police FIR Dataset 2024
+19.114609,72.770687,harassment,2026-06-02,1,NCRB 2024
+19.107336,72.759345,robbery,2026-06-23,4,Smart City Crime Reports
+18.939129,72.834404,robbery,2026-08-11,4,Mumbai Police FIR Dataset 2024
+18.893971,73.009934,theft,2026-08-07,3,Mumbai Police FIR Dataset 2024
+19.072962,73.025241,robbery,2026-08-08,2,NCRB 2024
+19.05222,72.87906,theft,2026-05-26,5,Smart City Crime Reports
+18.968941,72.926558,harassment,2026-06-30,5,Smart City Crime Reports
+19.229845,72.809808,vandalism,2026-08-21,2,Mumbai Police FIR Dataset 2024
+19.176003,73.017606,vandalism,2026-06-30,4,Mumbai Police FIR Dataset 2024
+18.989184,72.849993,theft,2026-05-30,2,NCRB 2024
+19.01304,72.912783,theft,2026-07-01,2,NCRB 2024
+19.018359,72.844339,robbery,2026-08-18,5,Mumbai Police FIR Dataset 2024
+18.948325,72.835298,assault,2026-07-26,4,Mumbai Police FIR Dataset 2024
+19.179971,72.750345,robbery,2026-06-15,4,Mumbai Police FIR Dataset 2024
+19.076711,72.878433,robbery,2026-08-11,4,Mumbai Police FIR Dataset 2024
+18.85107,72.885151,robbery,2026-06-08,3,Mumbai Police FIR Dataset 2024
+19.1276,73.021027,harassment,2026-08-18,1,NCRB 2024
+18.895954,72.83357,robbery,2026-07-26,5,Smart City Crime Reports
+19.120211,72.90968,robbery,2026-08-01,4,Mumbai Police FIR Dataset 2024
+19.076271,72.87743,robbery,2026-08-12,3,Mumbai Police FIR Dataset 2024
+19.193362,72.793406,vandalism,2026-08-07,3,Mumbai Police FIR Dataset 2024
+18.948186,72.834579,assault,2026-07-31,5,Mumbai Police FIR Dataset 2024
+19.080808,72.955935,assault,2026-08-04,5,NCRB 2024
+19.064346,72.978657,assault,2026-07-31,2,Smart City Crime Reports
+19.121044,72.797393,harassment,2026-06-28,5,NCRB 2024
+19.239535,72.974843,assault,2026-07-24,2,NCRB 2024
+18.945522,72.864891,theft,2026-07-02,3,Smart City Crime Reports
+19.01675,72.845366,theft,2026-07-26,5,Mumbai Police FIR Dataset 2024
+19.189206,72.965926,vandalism,2026-07-16,3,Smart City Crime Reports
+19.12069,72.9096,assault,2026-08-09,4,Mumbai Police FIR Dataset 2024
+18.859466,72.807939,harassment,2026-07-12,1,NCRB 2024
+19.149006,72.91384,assault,2026-06-07,4,Mumbai Police FIR Dataset 2024
+19.117031,73.046368,harassment,2026-06-08,4,Smart City Crime Reports
+19.018179,73.032109,pickpocketing,2026-05-29,2,Smart City Crime Reports

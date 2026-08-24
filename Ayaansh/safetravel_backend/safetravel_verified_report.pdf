@@ -1,0 +1,261 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [7 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Length 3772 >>
+stream
+0.120 0.280 0.240 rg
+0.00 720.00 612.00 72.00 re f
+1.000 1.000 1.000 rg
+BT
+/F2 18 Tf
+40.00 755.00 Td
+(TRAVARA | SAFETRAVEL) Tj
+ET
+0.850 0.950 0.900 rg
+BT
+/F1 10 Tf
+40.00 735.00 Td
+(OFFICIAL TOURIST SAFETY PASSPORT & INCIDENT AUDIT) Tj
+ET
+0.850 0.950 0.900 rg
+BT
+/F1 8 Tf
+400.00 735.00 Td
+(Generated: 2026-08-24 06:00:56 UTC) Tj
+ET
+0.960 0.970 0.960 rg
+0.850 0.880 0.850 RG
+1 w
+40.00 630.00 532.00 75.00 re B
+0.120 0.280 0.240 rg
+BT
+/F2 10 Tf
+55.00 688.00 Td
+(TOURIST PROFILE & SESSION) Tj
+ET
+0.100 0.100 0.100 rg
+BT
+/F1 10 Tf
+55.00 670.00 Td
+(Tourist Name: Explorer Test) Tj
+ET
+0.100 0.100 0.100 rg
+BT
+/F1 10 Tf
+55.00 654.00 Td
+(Email / ID:   explorer@travara.app) Tj
+ET
+0.300 0.300 0.300 rg
+BT
+/F3 9 Tf
+55.00 638.00 Td
+(Session Token: test-pdf-session-999) Tj
+ET
+0.150 0.550 0.300 rg
+BT
+/F2 9 Tf
+400.00 670.00 Td
+(Status: VERIFIED SAFEGUARD) Tj
+ET
+1.000 1.000 1.000 rg
+0.850 0.850 0.850 RG
+1 w
+40.00 535.00 532.00 85.00 re B
+0.120 0.280 0.240 rg
+BT
+/F2 10 Tf
+55.00 603.00 Td
+(REAL-TIME TELEMETRY & LOCALIZATION \(P1 ENGINE\)) Tj
+ET
+0.200 0.200 0.200 rg
+BT
+/F1 10 Tf
+55.00 583.00 Td
+(Latitude:   19.076000) Tj
+ET
+0.200 0.200 0.200 rg
+BT
+/F1 10 Tf
+55.00 567.00 Td
+(Longitude:  72.877700) Tj
+ET
+0.200 0.200 0.200 rg
+BT
+/F1 10 Tf
+55.00 551.00 Td
+(Position Source: GPS \(Multi-Sensor Inertial Fusion\)) Tj
+ET
+0.150 0.550 0.300 rg
+BT
+/F2 10 Tf
+340.00 583.00 Td
+(Fix Confidence:  95%) Tj
+ET
+0.400 0.400 0.400 rg
+BT
+/F1 9 Tf
+340.00 567.00 Td
+(Infrastructure: Connected \(Case 1\)) Tj
+ET
+1.000 1.000 1.000 rg
+0.850 0.850 0.850 RG
+1 w
+40.00 425.00 532.00 95.00 re B
+0.120 0.280 0.240 rg
+BT
+/F2 10 Tf
+55.00 503.00 Td
+(CONTEXTUAL RISK & GEOFENCING ASSESSMENT \(P3/P2 ENGINE\)) Tj
+ET
+0.150 0.550 0.300 rg
+55.00 455.00 120.00 32.00 re f
+1.000 1.000 1.000 rg
+BT
+/F2 12 Tf
+65.00 467.00 Td
+(RISK: LOW) Tj
+ET
+0.150 0.550 0.300 rg
+BT
+/F2 11 Tf
+190.00 467.00 Td
+(Score: 15/100) Tj
+ET
+0.300 0.300 0.300 rg
+BT
+/F1 9 Tf
+190.00 451.00 Td
+(Nearest Hotspot: H1 \(15 reported incidents, 250m away\)) Tj
+ET
+0.400 0.400 0.400 rg
+BT
+/F1 9 Tf
+55.00 435.00 Td
+(Key Assessment Factors: ["Daylight hours", "Police station nearby", "Low crime density"]) Tj
+ET
+1.000 1.000 1.000 rg
+0.850 0.850 0.850 RG
+1 w
+40.00 275.00 532.00 135.00 re B
+0.120 0.280 0.240 rg
+BT
+/F2 10 Tf
+55.00 393.00 Td
+(INCIDENT LOG & IMMUTABLE BLOCKCHAIN AUDIT TRAIL \(P4 ENGINE\)) Tj
+ET
+0.100 0.100 0.100 rg
+BT
+/F2 9 Tf
+55.00 373.00 Td
+([*] ID: INC-1787551256367 [ACTIVE] | Coords: 19.0760, 72.8777) Tj
+ET
+0.200 0.400 0.600 rg
+BT
+/F3 8 Tf
+55.00 361.00 Td
+(    Tx Hash: 0x4a8f9c2d1e0b5a7e9f8c6b4a2d0e1f3a5b7c9e0f) Tj
+ET
+0.980 0.980 0.980 rg
+0.850 0.850 0.850 RG
+1 w
+40.00 140.00 532.00 120.00 re B
+0.120 0.280 0.240 rg
+BT
+/F2 10 Tf
+55.00 243.00 Td
+(RECOMMENDED SAFE HAVENS & EMERGENCY DISPATCH) Tj
+ET
+0.100 0.100 0.100 rg
+BT
+/F2 9 Tf
+55.00 223.00 Td
+([+] Crawford Market Police Station \(POLICE\)) Tj
+ET
+0.300 0.300 0.300 rg
+BT
+/F1 8 Tf
+420.00 223.00 Td
+(Distance: 350m | Status: 24x7) Tj
+ET
+0.100 0.100 0.100 rg
+BT
+/F2 9 Tf
+55.00 205.00 Td
+([+] Azad Maidan Police Station \(POLICE\)) Tj
+ET
+0.300 0.300 0.300 rg
+BT
+/F1 8 Tf
+420.00 205.00 Td
+(Distance: 350m | Status: 24x7) Tj
+ET
+0.100 0.100 0.100 rg
+BT
+/F2 9 Tf
+55.00 187.00 Td
+([+] Colaba Police Station \(POLICE\)) Tj
+ET
+0.300 0.300 0.300 rg
+BT
+/F1 8 Tf
+420.00 187.00 Td
+(Distance: 350m | Status: 24x7) Tj
+ET
+0.700 0.700 0.700 RG
+0.8 w
+40.00 95.00 m
+572.00 95.00 l S
+0.200 0.200 0.200 rg
+BT
+/F2 8 Tf
+40.00 80.00 Td
+(Smart India Hackathon \(SIH\)  -  SafeTravel Offline-First Tourist Ecosystem) Tj
+ET
+0.400 0.400 0.400 rg
+BT
+/F1 7.5 Tf
+40.00 68.00 Td
+(This document is cryptographically verified by the SafeTravel decentralized dispatch engine.) Tj
+ET
+0.500 0.500 0.500 rg
+BT
+/F3 7 Tf
+40.00 56.00 Td
+(Doc Digest: 97ab2805dee7e4a634fc97fcc1ab5d074bfb5b5b4c2fc0f1351669e05f0ab25b) Tj
+ET
+
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000191 00000 n 
+0000000266 00000 n 
+0000000334 00000 n 
+0000004158 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+4304
+%%EOF

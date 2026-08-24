@@ -1,0 +1,136 @@
+import 'models.dart';
+
+class MockData {
+  static List<TripDestination> popularDestinations = [
+    TripDestination(
+      id: 'd1',
+      name: 'Nusa Dua Beach',
+      location: 'Bali, Indonesia',
+      imageUrl: 'https://picsum.photos/seed/nusadua/400/600',
+      rating: 4.8,
+      isPopular: true,
+    ),
+    TripDestination(
+      id: 'd2',
+      name: 'Mount Cook',
+      location: 'Canterbury, New Zealand',
+      imageUrl: 'https://picsum.photos/seed/mountcook/400/600',
+      rating: 4.9,
+      isPopular: true,
+    ),
+    TripDestination(
+      id: 'd3',
+      name: 'Southern Alps',
+      location: 'New Zealand',
+      imageUrl: 'https://picsum.photos/seed/southernalps/400/600',
+      rating: 4.7,
+      isPopular: false,
+    ),
+    TripDestination(
+      id: 'd4',
+      name: 'Cape Town',
+      location: 'South Africa',
+      imageUrl: 'https://picsum.photos/seed/capetown/400/600',
+      rating: 4.9,
+      isPopular: true,
+    ),
+  ];
+
+
+  static LocationEstimate initialLocation = LocationEstimate(
+    lat: -8.7941,
+    lon: 115.2266, // near Nusa Dua
+    source: 'GPS',
+    confidence: LocationConfidence.high,
+  );
+
+  static List<SafeLocation> safeLocations = [
+    SafeLocation(
+      id: 's1',
+      name: 'Tourist Help Centre',
+      distance: 120,
+      type: 'Public Services',
+      isOpen: true,
+      isStaffed: true,
+      score: 95,
+      lat: -8.7950,
+      lon: 115.2260,
+    ),
+    SafeLocation(
+      id: 's2',
+      name: 'Bumbu Bali',
+      distance: 280,
+      type: 'Restaurant',
+      isOpen: true,
+      isStaffed: true,
+      score: 88,
+      lat: -8.7960,
+      lon: 115.2280,
+    ),
+    SafeLocation(
+      id: 's3',
+      name: 'Grand Hyatt Security',
+      distance: 450,
+      type: 'Hotel Security',
+      isOpen: true,
+      isStaffed: true,
+      score: 92,
+      lat: -8.7920,
+      lon: 115.2250,
+    ),
+  ];
+
+  static Hotspot mockHotspot = Hotspot(
+    id: 'h1',
+    name: 'Kuta Night Market Area',
+    risk: RiskLevel.high,
+    reportedIncidents: 12,
+    recentIncidents: 3,
+    score: 85.0,
+    radius: 1500, // 1.5 km
+    centerLat: -8.7970,
+    centerLon: 115.2250,
+  );
+
+  static List<Hotspot> hotspots = [mockHotspot];
+
+  static CommunicationStatus normalComm = CommunicationStatus(
+    internet: true,
+    sms: true,
+    relay: true,
+    offlineQueue: true,
+    selectedChannel: 'INTERNET',
+  );
+
+  static CommunicationStatus offlineComm = CommunicationStatus(
+    internet: false,
+    sms: false,
+    relay: true,
+    offlineQueue: true,
+    selectedChannel: 'RELAY',
+  );
+
+  static List<TimelineEvent> mockTimeline = [
+    TimelineEvent(
+      time: DateTime.now().subtract(const Duration(minutes: 5)),
+      title: 'GPS signal lost',
+      description: 'System automatically switched to PDR.',
+      state: 'warning',
+      icon: 'map_pin_off',
+    ),
+    TimelineEvent(
+      time: DateTime.now().subtract(const Duration(minutes: 4)),
+      title: 'PDR activated',
+      description: 'Journey is being estimated accurately.',
+      state: 'completed',
+      icon: 'navigation',
+    ),
+    TimelineEvent(
+      time: DateTime.now().subtract(const Duration(minutes: 1)),
+      title: 'High-risk hotspot detected',
+      description: 'Reported incidents concentrated nearby.',
+      state: 'emergency',
+      icon: 'alert_circle',
+    ),
+  ];
+}
